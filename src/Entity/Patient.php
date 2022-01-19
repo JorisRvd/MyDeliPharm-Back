@@ -57,6 +57,23 @@ class Patient
      */
     private $mutuelleFile;
 
+    /**
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Order::class, mappedBy="patient", cascade={"persist", "remove"})
+     */
+    private $orders;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Dispensary::class, inversedBy="patients")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $dispensary;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -154,6 +171,52 @@ class Patient
     public function setMutuelleFile(?string $mutuelleFile): self
     {
         $this->mutuelleFile = $mutuelleFile;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getOrders(): ?Order
+    {
+        return $this->orders;
+    }
+
+    public function setOrders(?Order $orders): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($orders === null && $this->orders !== null) {
+            $this->orders->setPatient(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($orders !== null && $orders->getPatient() !== $this) {
+            $orders->setPatient($this);
+        }
+
+        $this->orders = $orders;
+
+        return $this;
+    }
+
+    public function getDispensary(): ?Dispensary
+    {
+        return $this->dispensary;
+    }
+
+    public function setDispensary(?Dispensary $dispensary): self
+    {
+        $this->dispensary = $dispensary;
 
         return $this;
     }

@@ -32,6 +32,17 @@ class Address
      */
     private $city;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="address")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Dispensary::class, mappedBy="address", cascade={"persist", "remove"})
+     */
+    private $dispensary;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,6 +80,35 @@ class Address
     public function setCity(string $city): self
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getDispensary(): ?Dispensary
+    {
+        return $this->dispensary;
+    }
+
+    public function setDispensary(Dispensary $dispensary): self
+    {
+        // set the owning side of the relation if necessary
+        if ($dispensary->getAddress() !== $this) {
+            $dispensary->setAddress($this);
+        }
+
+        $this->dispensary = $dispensary;
 
         return $this;
     }

@@ -33,6 +33,21 @@ class Order
      */
     private $status;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Patient::class, inversedBy="orders", cascade={"persist", "remove"})
+     */
+    private $patient;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Driver::class, inversedBy="orders", cascade={"persist", "remove"})
+     */
+    private $driver;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Pharmacist::class, inversedBy="orders", cascade={"persist", "remove"})
+     */
+    private $pharmacist;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -70,6 +85,42 @@ class Order
     public function setStatus(int $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getPatient(): ?Patient
+    {
+        return $this->patient;
+    }
+
+    public function setPatient(?Patient $patient): self
+    {
+        $this->patient = $patient;
+
+        return $this;
+    }
+
+    public function getDriver(): ?Driver
+    {
+        return $this->driver;
+    }
+
+    public function setDriver(?Driver $driver): self
+    {
+        $this->driver = $driver;
+
+        return $this;
+    }
+
+    public function getPharmacist(): ?Pharmacist
+    {
+        return $this->pharmacist;
+    }
+
+    public function setPharmacist(?Pharmacist $pharmacist): self
+    {
+        $this->pharmacist = $pharmacist;
 
         return $this;
     }
