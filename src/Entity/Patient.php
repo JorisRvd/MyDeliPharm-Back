@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PatientRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PatientRepository::class)
@@ -19,11 +20,13 @@ class Patient
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      */
     private $weight;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      */
     private $age;
 
@@ -44,6 +47,7 @@ class Patient
 
     /**
      * @ORM\Column(type="smallint")
+     * @Groups({"get_collection"})
      */
     private $status;
 
@@ -60,6 +64,7 @@ class Patient
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_collection"})
      */
     private $user;
 

@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\AddressRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=AddressRepository::class)
@@ -19,22 +22,26 @@ class Address
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"get_address"})
      */
     private $street;
 
     /**
      * @ORM\Column(type="string", length=5)
+     * @Groups({"get_address"})
      */
     private $postcode;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Groups({"get_address"})
      */
     private $city;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="address")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_address"})
      */
     private $user;
 

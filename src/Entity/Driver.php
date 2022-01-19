@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\DriverRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=DriverRepository::class)
@@ -19,11 +22,13 @@ class Driver
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"get_driver"})
      */
     private $location;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Groups({"get_driver"})
      */
     private $vehicule;
 
@@ -34,17 +39,20 @@ class Driver
 
     /**
      * @ORM\Column(type="string", length=2048)
+     * @Groups({"get_driver"})
      */
     private $profilPic;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="driver", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_driver"})
      */
     private $user;
 
     /**
      * @ORM\OneToOne(targetEntity=Order::class, mappedBy="driver", cascade={"persist", "remove"})
+     * @Groups({"get_driver"})
      */
     private $orders;
 

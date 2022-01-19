@@ -6,6 +6,9 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
@@ -21,51 +24,62 @@ class User
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Groups({"get_collection", "get_pharmacist", "get_address", "get_driver"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=50)
+     * @Groups({"get_collection", "get_pharmacist", "get_driver"})
+     * 
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=180)
+     * @Groups({"get_collection", "get_pharmacist", "get_driver"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"get_collection", "get_pharmacist", "get_driver"})
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=15)
+     * @Groups({"get_collection", "get_pharmacist", "get_driver"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"get_collection", "get_pharmacist"})
      */
     private $isAdmin;
 
     /**
      * @ORM\OneToMany(targetEntity=Address::class, mappedBy="user", orphanRemoval=true)
+     * @Groups({"get_pharmacist"})
      */
     private $address;
 
     /**
      * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
+     * @Groups({"get_pharmacist"})
      */
     private $patient;
 
     /**
      * @ORM\OneToOne(targetEntity=Driver::class, mappedBy="user", cascade={"persist", "remove"})
+     * @Groups({"get_pharmacist"})
      */
     private $driver;
 
     /**
      * @ORM\OneToOne(targetEntity=Pharmacist::class, mappedBy="user", cascade={"persist", "remove"})
+     * 
      */
     private $pharmacist;
 
