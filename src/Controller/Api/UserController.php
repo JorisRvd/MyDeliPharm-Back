@@ -16,7 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UserController extends AbstractController
+
+class UserController  extends AbstractController
 {
     /**
      * Fonction permettant d'afficher un utilisateur
