@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\PatientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Entity\User;
+
 
 /**
  * @ORM\Entity(repositoryClass=PatientRepository::class)
@@ -19,11 +23,13 @@ class Patient
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      */
     private $weight;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      */
     private $age;
 
@@ -44,6 +50,7 @@ class Patient
 
     /**
      * @ORM\Column(type="smallint")
+     * @Groups({"get_collection"})
      */
     private $status;
 
@@ -60,6 +67,7 @@ class Patient
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_collection"})
      */
     private $user;
 
@@ -73,7 +81,14 @@ class Patient
      * @ORM\JoinColumn(nullable=true)
      */
     private $dispensary;
-
+    public function __construct()
+    {
+        $this->user = new User; 
+    }
+    public function __toString()
+    {
+        return $this->user;
+    }
     public function getId(): ?int
     {
         return $this->id;

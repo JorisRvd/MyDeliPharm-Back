@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\PharmacistRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+
+
 
 /**
  * @ORM\Entity(repositoryClass=PharmacistRepository::class)
@@ -14,40 +17,56 @@ class Pharmacist
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * 
      */
     private $id;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"get_pharmacist"})
      */
     private $rppsNumber;
 
     /**
      * @ORM\Column(type="smallint")
+     * @Groups({"get_pharmacist"})
      */
     private $status;
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_pharmacist"})
      */
     private $profilPic;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="pharmacist", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_pharmacist"})
      */
     private $user;
 
     /**
      * @ORM\OneToOne(targetEntity=Order::class, mappedBy="pharmacist", cascade={"persist", "remove"})
+     * @Groups({"get_pharmacist"})
      */
     private $orders;
 
     /**
      * @ORM\ManyToOne(targetEntity=Dispensary::class, inversedBy="pharmacist")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_pharmacist"})
      */
     private $dispensary;
+
+    public function __construct()
+    {
+        $this->user = new User; 
+    }
+    public function __toString()
+    {
+        return $this->user;
+    }
 
     public function getId(): ?int
     {
