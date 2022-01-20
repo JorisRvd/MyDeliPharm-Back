@@ -59,6 +59,15 @@ class Pharmacist
      */
     private $dispensary;
 
+    public function __construct()
+    {
+        $this->user = new User; 
+    }
+    public function __toString()
+    {
+        return $this->user;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

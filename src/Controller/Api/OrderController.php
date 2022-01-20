@@ -6,6 +6,10 @@ use App\Entity\Order;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class OrderController extends AbstractController
 {
@@ -26,13 +30,25 @@ class OrderController extends AbstractController
     }
 
     /**
-     * Get all order 
+     * Create new order
      * 
-     * @Route("/api/order", name="api_order_all", methods={"GET"})
+     * @Route ("/api/order/new", name="api_order_create", methods={"GET","POST"})
+     * 
      */
-    public function getAllOrder()
+    public function createOrder(Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
     {
-        // code ...
+        $newOrder = new Order();
+        $newOrder->setPrescription('create prescription');  
+        $newOrder->setSafetyCode('1212121');  
+        $newOrder->setStatus('0');
+
+
+        $em->persist($newOrder);
+        $em->flush();
+        return new JsonResponse([
+            'success_message' => 'Thank you for registering'
+        ]);
+        
     }
 
     

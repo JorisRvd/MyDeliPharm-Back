@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\PatientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use App\Entity\User;
+
 
 /**
  * @ORM\Entity(repositoryClass=PatientRepository::class)
@@ -78,7 +81,14 @@ class Patient
      * @ORM\JoinColumn(nullable=true)
      */
     private $dispensary;
-
+    public function __construct()
+    {
+        $this->user = new User; 
+    }
+    public function __toString()
+    {
+        return $this->user;
+    }
     public function getId(): ?int
     {
         return $this->id;

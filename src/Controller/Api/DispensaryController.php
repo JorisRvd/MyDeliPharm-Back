@@ -2,16 +2,68 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Address;
 use App\Entity\Dispensary;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DispensaryController extends AbstractController
 {
+    /**
+     * Fonction permettant de créer une officine 
+     * 
+     * @Route("/api/address/dispensary/{id}", name="api_dispensary_create",methods={"POST"})
+     */
+    public function createDispensary( Request $request, EntityManagerInterface $em, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id)
+    {
+        $em = $doctrine->getManager();
+        $address = $em->getRepository(Address::class)->find($id); 
+        $dispensary = new Dispensary(); 
+        $dispensary->setStatus(1); 
+        $dispensary->setOther('ca fonctionne'); 
+        $dispensary->setOpeningHours('peut être mais la flemme'); 
+        $dispensary->setAddress($address);
+
+                
+        $em->persist($dispensary);
+        $em->flush();
+        return new JsonResponse([
+            'success_message' => 'Officine bien enregistrée'
+        ]);
+    }
+    /**
+     * Fonction permettant d'éditer une officine 
+     * 
+     * @Route("/api/address/dispensary/{id}", name="api_dispensary_update",methods={"PUT"})
+     */
+    public function editDispensary(ManagerRegistry $doctrine, int $id): Response
+    {
+        $em = $doctrine->getManager();
+        $dispensary = $em->getRepository(Dispensary::class)->find($id);
+        
+        if (!$dispensary) {
+            throw $this->createNotFoundException(
+                'No user found for id '.$id
+            );
+        }
+        $dispensary->setStatus(1); 
+        $dispensary->setOther('ca fonctionne'); 
+        $dispensary->setOpeningHours('flemme'); 
+        
+        $em->flush();
+
+        return new JsonResponse([
+            'success_message' => 'Officine mise à jour'
+        ]);
+    }
+    
     /**
      * Fonction permettant d'afficher l'officine
      * 
@@ -31,42 +83,25 @@ class DispensaryController extends AbstractController
         
     /**
      * Fonction permettant de supprimer les données d'un patient 
-     * @Route ("/api/patient/{id}", name="api_patient_delete", methods={"POST"})
+     * @Route ("/api/dispensary/{id}", name="api_dispensary_delete", methods={"POST", "DELETE"})
      */
-    public function delete(Request $request, Dispensary $dispensary, EntityManagerInterface $entityManager,SerializerInterface $serializer) : Response
+    public function delete(ManagerRegistry $doctrine, int $id) : Response
     {
-        if ($this->isCsrfTokenValid('delete'. $dispensary->getAddress()->getUser()->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($dispensary);
-            $entityManager->flush();
-        }
-        return $this->json(
-            $dispensary,
-            200,
-            [],
-            [
-            'groups' => 'get_dispensary'
-        ]
-        );
-    }
-        
-    /**
-     * Fonction permettant de modifier les infos d'un patient 
-     * 
-     * @Route ("/api/patient/{id}", name="api_patient_edit", methods={"GET","PUT"})
-     */
-    public function edit(Dispensary $dispensary,Request $request, EntityManagerInterface $entityManager)
-    {
-        $form = $this->createForm(PatientType::class, $dispensary);
-        $form->handleRequest($request);
-        
+        $entityManager = $doctrine->getManager();
+        $dispensary = $entityManager->getRepository(Dispensary::class)->find($id);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+        if (!$dispensary) {
+            throw $this->createNotFoundException(
+                'No dispensary found for id '.$id
+            );
         }
-        
-        return $this->json($dispensary, 200, [], 
-        [
-            'groups' => 'get_collection'
+
+        $entityManager->remove($dispensary);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'success_message' => 'Pharmacie supprimé.'
         ]);
     }
+        
 }

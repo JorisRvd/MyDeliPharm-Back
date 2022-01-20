@@ -2,15 +2,54 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\User;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Entity\Driver;
 
 class DriverController extends AbstractController
 {
+
     /**
-     * @Route("/api/driver/{id}", name="api_driver")
+     * Create profil driver
+     * 
+     * @Route ("/api/user/driver", name="api_driver_create", methods={"GET","POST"})
+     * 
+     */
+    public function createDriver(Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
+    {
+        $user = new User();
+        $user->setFirstname('test');  
+        $user->setLastname('lastname');  
+        $user->setEmail('email');
+        $user->setPassword('password');   
+        $user->setPhoneNumber('phoneNumber');   
+        $user->setIsAdmin('isAdmin');
+        $newDriver = new Driver();
+        $newDriver->setLocation('Paris');
+        $newDriver->setVehicule('T-Max');
+        $newDriver->setProfilPic('Tmax-en-i.jpeg');
+        $newDriver->setStatus('0');
+        $newDriver->setUser($user);
+        
+        
+        
+        $em->persist($newDriver);
+        $em->flush();
+        return new JsonResponse([
+            'success_message' => 'Thank you for registering'
+        ]);
+        
+    }
+
+    /**
+     * @Route("/api/user/driver/{id}", name="api_driver",methods={"GET"})
      */
     public function getDriver(Driver $driver): Response
     {
@@ -26,20 +65,29 @@ class DriverController extends AbstractController
     /**
      * Edit profil Driver
      * 
-     * @Route("/api/driver/{id}", name="api_driver_edit", methods={"GET","POST"})
+     * @Route("/api/user/driver/{id}", name="api_driver_edit", methods={"PUT"})
      */
-    public function edit()
+    public function edit(ManagerRegistry $doctrine, int $id): Response
     {
-        // code...
+        $em = $doctrine->getManager();
+        $driver = $em->getRepository(Driver::class)->find($id);
+        
+        if (!$driver) {
+            throw $this->createNotFoundException(
+                'No driver found for id '.$id
+            );
+        }
+
+            $driver->setLocation('Paris XV');
+            $driver->setVehicule('T-Max');
+            $driver->setStatus('1');
+            $driver->setProfilPic('T-max-edit.jpeg');
+            $em->flush();
+        
+        
+            return new JsonResponse([
+                'success_message' => 'Profil mis à jour.'
+            ]);
     }
 
-    /**
-     * Delete profil Driver
-     * 
-     * @Route("/api/driver/{id}", name="api_driver_delete", methods={"DELETE"})
-     */
-    public function delete()
-    {
-        // code...
-    }
 }
