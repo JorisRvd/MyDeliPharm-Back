@@ -3,7 +3,6 @@
 namespace App\Controller\Api;
 
 use App\Entity\ApiUser;
-use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManager;
@@ -18,7 +17,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
-class UserController  extends AbstractController
+class ApiUserController  extends AbstractController
 {
     /**
      * Fonction permettant d'afficher un utilisateur
@@ -66,7 +65,7 @@ class UserController  extends AbstractController
     public function edit(ManagerRegistry $doctrine, int $id): Response
     {
         $em = $doctrine->getManager();
-        $user = $em->getRepository(ApiUser::class)->find($id);
+        $user = $em->getRepository(User::class)->find($id);
         
         if (!$user) {
             throw $this->createNotFoundException(

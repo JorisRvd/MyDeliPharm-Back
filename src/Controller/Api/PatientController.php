@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+
 use App\Entity\Patient;
 use App\Entity\User;
 use App\Repository\PatientRepository;
@@ -12,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -23,13 +25,15 @@ class PatientController extends AbstractController
      * 
      * @Route ("/api/user/patient/", name="api_patient_create", methods={"GET","POST"})
      */
-    public function createPatient( Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
+    public function createPatient( Request $request, EntityManagerInterface $em, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = new User();
         $user->setFirstname('Stephen');  
         $user->setLastname('Curry');  
-        $user->setEmail('email');
-        $user->setPassword('password');   
+        $user->setEmail('email@email.com');
+        $hashedPassword = $userPasswordHasher->hashPassword($user, "1234");
+            // On écrase le mot de passe en clair par le mot de passe haché
+            $user->setPassword($hashedPassword);   
         $user->setPhoneNumber('phoneNumber');   
         $user->setIsAdmin('isAdmin');
         $newPatient = new Patient(); 
