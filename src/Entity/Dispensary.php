@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Dispensary
 {
     /**
-     * @dORM\I
+     * @dORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
