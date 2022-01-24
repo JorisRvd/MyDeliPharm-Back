@@ -26,6 +26,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"get_collection"})
      * @Assert\NotBlank
      * @Assert\Unique
      * @Assert\Email( message = "The email '{{ value }}' is not a valid email.")
@@ -48,28 +49,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
+     * @Groups({"get_collection"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
+     * @Groups({"get_collection"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=15)
+     * @Groups({"get_collection"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"get_collection"})
      */
     private $isAdmin;
         
     /**
      * @ORM\OneToMany(targetEntity=Address::class, mappedBy="user", orphanRemoval=true)
      * @Groups({"get_pharmacist"})
+     * 
      */
     private $address;
 
