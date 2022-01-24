@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -23,13 +24,15 @@ class PharmacistController extends AbstractController
      * @Route ("/api/user/pharmacist", name="api_pharmacist_create", methods={"GET","POST"})
      * 
      */
-    public function createPharmacist(Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
+    public function createPharmacist(Request $request, EntityManagerInterface $em, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = new User();
         $user->setFirstname('test');  
         $user->setLastname('lastname');  
-        $user->setEmail('email');
-        $user->setPassword('password');   
+        $user->setEmail('email@yahoo.com');
+        $hashedPassword = $userPasswordHasher->hashPassword($user, "1234");
+        // On écrase le mot de passe en clair par le mot de passe haché
+        $user->setPassword($hashedPassword);  
         $user->setPhoneNumber('phoneNumber');   
         $user->setIsAdmin('isAdmin');
         $newPharmacist = new Pharmacist();

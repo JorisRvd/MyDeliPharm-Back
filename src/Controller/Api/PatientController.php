@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -25,30 +26,42 @@ class PatientController extends AbstractController
      * 
      * @Route ("/api/user/patient/", name="api_patient_create", methods={"GET","POST"})
      */
-    public function createPatient( Request $request, EntityManagerInterface $em, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
+    public function createPatient( Request $request, UserRepository $user, ManagerRegistry $doctrine, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
-        $user = new User();
-        $user->setFirstname('Stephen');  
-        $user->setLastname('Curry');  
-        $user->setEmail('email@email.com');
-        $hashedPassword = $userPasswordHasher->hashPassword($user, "1234");
-            // On écrase le mot de passe en clair par le mot de passe haché
-            $user->setPassword($hashedPassword);   
-        $user->setPhoneNumber('phoneNumber');   
-        $user->setIsAdmin('isAdmin');
-        $newPatient = new Patient(); 
-        $newPatient->setWeight(82); 
-        $newPatient->setAge(18); 
-        $newPatient->setVitalCardNumber(1584528); 
-        $newPatient->setMutuelleNumber(1856158418); 
-        $newPatient->setStatus(1); 
-        $newPatient->setOther(''); 
-        $newPatient->setVitalCardFile(''); 
-        $newPatient->setMutuelleFile(''); 
-        $newPatient->setUser($user); 
-         
         
+        // Récupérer le contenu JSON
+        $jsonContent = $request->getContent();
+        //dd($jsonContent);
+        try {
+            // Désérialiser (convertir) le JSON en entité Doctrine Patient
+            $newPatient = $serializer->deserialize($jsonContent, User::class, 'json');
+        } catch (NotEncodableValueException $e) {
+            // Si le JSON fourni est "malformé" ou manquant, on prévient le client
+            return $this->json(
+                ['error' => 'JSON invalide'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+         // Valider l'entité
+        $errors = $validator->validate($newPatient);
+
+        // Y'a-t-il des erreurs ?
+        if (count($errors) > 0) {
+            // @todo Retourner des erreurs de validation propres
+            return $this->json($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $newUser = New User();
+        $newPatient = new Patient();
+        $newPatient->setUser($newUser);
+        //hash password
+        $hashedPassword = $userPasswordHasher->hashPassword($newPatient,$user->getPassword() );
+        // On écrase le mot de passe en clair par le mot de passe haché
+        $newPatient->getUser()->setPassword($hashedPassword); 
         
+        // On sauvegarde l'entité
+        $em = $doctrine->getManager();
         $em->persist($newPatient);
         $em->flush();
         return new JsonResponse([

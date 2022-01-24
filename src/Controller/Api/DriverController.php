@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Entity\Driver;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DriverController extends AbstractController
 {
@@ -22,13 +23,15 @@ class DriverController extends AbstractController
      * @Route ("/api/user/driver", name="api_driver_create", methods={"GET","POST"})
      * 
      */
-    public function createDriver(Request $request, EntityManagerInterface $em, ValidatorInterface $validator)
+    public function createDriver(Request $request, EntityManagerInterface $em, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
         $user = new User();
         $user->setFirstname('test');  
         $user->setLastname('lastname');  
         $user->setEmail('email');
-        $user->setPassword('password');   
+        $hashedPassword = $userPasswordHasher->hashPassword($user, "1234");
+        // On écrase le mot de passe en clair par le mot de passe haché
+        $user->setPassword($hashedPassword);  
         $user->setPhoneNumber('phoneNumber');   
         $user->setIsAdmin('isAdmin');
         $newDriver = new Driver();
@@ -78,10 +81,10 @@ class DriverController extends AbstractController
             );
         }
 
-            $driver->setLocation('Paris XV');
-            $driver->setVehicule('T-Max');
+            $driver->setLocation('Paris x');
+            $driver->setVehicule('vélo');
             $driver->setStatus('1');
-            $driver->setProfilPic('T-max-edit.jpeg');
+            $driver->setProfilPic('test.jpeg');
             $em->flush();
         
         

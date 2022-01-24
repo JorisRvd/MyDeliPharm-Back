@@ -26,17 +26,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"get_collection"}, {"get_pharmacist"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
      * 
      * @Assert\NotBlank
-     * @Assert\Unique
-     * @Assert\Email( message = "The email '{{ value }}' is not a valid email.")
+     * 
+     * 
      */
     private $email;
 
     /**
      * @ORM\Column(type="json")
-     * @Assert\NotBlank
+     * 
      */
     private $roles = [];
 
@@ -50,26 +50,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
-     * @Groups({"get_collection"}, {"get_pharmacist"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
-     * @Groups({"get_collection"}, {"get_pharmacist"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=15)
-     * @Groups({"get_collection"}, {"get_pharmacist"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"get_collection"}, {"get_pharmacist"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
      */
      
     private $isAdmin;
@@ -83,13 +83,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
-     * @Groups({"get_pharmacist"})
+     * @Groups({"get_pharmacist"}, {"get_driver"})
      */
     private $patient;
 
     /**
      * @ORM\OneToOne(targetEntity=Driver::class, mappedBy="user", cascade={"persist", "remove"})
-     * @Groups({"get_pharmacist"})
+     * @Groups({"get_pharmacist"}, {"get_driver"})
      */
     private $driver;
 

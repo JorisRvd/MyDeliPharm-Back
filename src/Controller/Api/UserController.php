@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -40,7 +41,7 @@ class UserController  extends AbstractController
      * Fonction permettant de supprimer un utilisateur
      * @Route ("/api/user/{id}", name="api_user_delete", methods={"POST", "DELETE"})
      */
-    public function delete(ManagerRegistry $doctrine, int $id) : Response
+    public function delete(ManagerRegistry $doctrine,$id) : Response
     {
         $entityManager = $doctrine->getManager();
         $user = $entityManager->getRepository(User::class)->find($id);
@@ -63,7 +64,7 @@ class UserController  extends AbstractController
      * 
      * @Route ("/api/user/{id}", name="api_user_edit", methods={"PUT"})
      */
-    public function edit(ManagerRegistry $doctrine, int $id): Response
+    public function edit(ManagerRegistry $doctrine, int $id, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $em = $doctrine->getManager();
         $user = $em->getRepository(User::class)->find($id);
@@ -74,10 +75,12 @@ class UserController  extends AbstractController
             );
         }
 
-            $user->setFirstname('Stephen');  
+            $user->setFirstname('Steph');  
             $user->setLastname('Curry');  
-            $user->setEmail('email@gmail.com');
-            $user->setPassword('password');   
+            $user->setEmail('emailtest@gmail.com');
+            $hashedPassword = $userPasswordHasher->hashPassword($user, "1234");
+            // On écrase le mot de passe en clair par le mot de passe haché
+            $user->setPassword($hashedPassword);  
             $user->setPhoneNumber('065258687458');   
             $user->setIsAdmin('isAdmin');
             $em->flush();
