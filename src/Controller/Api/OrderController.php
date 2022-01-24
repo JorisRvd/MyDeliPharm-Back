@@ -21,7 +21,7 @@ class OrderController extends AbstractController
     public function getOrder(Order $order): Response
     {
         if ($order === null) {
-            return $this->json(['error' => 'livraison non trouvé.'], 404);
+            return $this->json(['error' => 'livraison non trouvée.'], 404);
         }
         return $this->json($order, 200, [], 
         [

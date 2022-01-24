@@ -44,7 +44,7 @@ class AddressController extends AbstractController
      * 
      * @Route("/api/address/{id}", name="api_address", methods={"GET"})
      */
-    public function getAddress(Address $address): Response
+    public function getAddress(Address $address = null): Response
     {
         if ($address === null) {
             return $this->json(['error' => 'Adresse non trouvé.'], 404);
