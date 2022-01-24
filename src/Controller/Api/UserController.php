@@ -25,7 +25,7 @@ class UserController  extends AbstractController
      * 
      * @Route("/api/user/{id}", name="api_user", methods={"GET"})
      */
-    public function getUser(ApiUser $user = null): Response
+    public function getUser(User $user = null): Response
     {
         if ($user === null) {
             return $this->json(['error' => 'Patient non trouvé.'], 404);
@@ -66,7 +66,7 @@ class UserController  extends AbstractController
     public function edit(ManagerRegistry $doctrine, int $id): Response
     {
         $em = $doctrine->getManager();
-        $user = $em->getRepository(ApiUser::class)->find($id);
+        $user = $em->getRepository(User::class)->find($id);
         
         if (!$user) {
             throw $this->createNotFoundException(

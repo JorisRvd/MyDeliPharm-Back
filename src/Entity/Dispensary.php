@@ -6,6 +6,7 @@ use App\Repository\DispensaryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=DispensaryRepository::class)
@@ -13,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Dispensary
 {
     /**
-     * @ORM\Id
+     * @dORM\I
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
@@ -21,6 +22,8 @@ class Dispensary
 
     /**
      * @ORM\Column(type="smallint")
+     * @Assert\NotBlank
+     * 
      */
     private $status;
 
@@ -31,6 +34,8 @@ class Dispensary
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank
+     * 
      */
     private $openingHours;
 
@@ -49,6 +54,11 @@ class Dispensary
      * @ORM\OneToMany(targetEntity=Pharmacist::class, mappedBy="dispensary", orphanRemoval=true)
      */
     private $pharmacist;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $name;
 
     public function __construct()
     {
@@ -165,6 +175,18 @@ class Dispensary
                 $pharmacist->setDispensary(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }

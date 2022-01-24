@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PharmacistRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 
@@ -24,18 +25,24 @@ class Pharmacist
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_pharmacist"})
+     * @Assert\Unique
+     * @Assert\NotBlank
+     * @Assert\Positive
      */
     private $rppsNumber;
 
     /**
      * @ORM\Column(type="smallint")
      * @Groups({"get_pharmacist"})
+     * @Assert\NotBlank
+     * 
      */
     private $status;
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
      * @Groups({"get_pharmacist"})
+     * @Assert\Url
      */
     private $profilPic;
 

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\OrderRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 
@@ -25,18 +26,21 @@ class Order
     /**
      * @ORM\Column(type="string", length=2048)
      * @Groups({"get_order"})
+     * @Assert\Url
      */
     private $prescription;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
+     * @Assert\NotBlank
      */
     private $safetyCode;
 
     /**
      * @ORM\Column(type="smallint")
      * @Groups({"get_order"})
+     * @Assert\NotBlank
      */
     private $status;
 

@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\DriverRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -23,23 +23,27 @@ class Driver
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"get_driver"})
+     * @Assert\NotBlank
      */
     private $location;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Groups({"get_driver"})
+     * @Assert\NotBlank
      */
     private $vehicule;
 
     /**
      * @ORM\Column(type="smallint")
+     * @Assert\NotBlank
      */
     private $status;
 
     /**
      * @ORM\Column(type="string", length=2048)
      * @Groups({"get_driver"})
+     * @Assert\Url
      */
     private $profilPic;
 

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use App\Entity\User;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
@@ -24,22 +25,31 @@ class Patient
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
+     * @Assert\NotBlank
+     * @Assert\Positive
      */
     private $weight;
 
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
+     * @Assert\NotBlank
      */
     private $age;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Unique
+     * @Assert\Positive
+     * 
      */
     private $vitalCardNumber;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Assert\Unique
+     * @Assert\Positive
+     * 
      */
     private $mutuelleNumber;
 
@@ -56,11 +66,13 @@ class Patient
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Assert\Url
      */
     private $vitalCardFile;
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Assert\Url
      */
     private $mutuelleFile;
 
@@ -81,6 +93,8 @@ class Patient
      * @ORM\JoinColumn(nullable=true)
      */
     private $dispensary;
+
+
     public function __construct()
     {
         $this->user = new User; 
@@ -235,4 +249,5 @@ class Patient
 
         return $this;
     }
+
 }

@@ -14,7 +14,7 @@ class ApiLoginController extends AbstractController
     /**
      * @Route("/api/login", name="api_login", methods={"POST"})
      */
-    public function index(?ApiUser $user): Response
+    public function index(?User $user): Response
     {
         if (null === $user) {
             return $this->json([
