@@ -51,10 +51,10 @@ class DriverController extends AbstractController
     /**
      * @Route("/api/user/driver/{id}", name="api_driver",methods={"GET"})
      */
-    public function getDriver(Driver $driver = null): Response
+    public function getDriver(Driver $driver): Response
     {
         if ($driver === null) {
-            return $this->json(['error' => 'livraison non trouvé.'], 404);
+            return $this->json(['error' => 'livreur non trouvé.'], 404);
         }
         return $this->json($driver, 200, [], 
         [
