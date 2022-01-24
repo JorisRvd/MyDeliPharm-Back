@@ -28,7 +28,7 @@ class UserController  extends AbstractController
     public function getUser(User $user = null): Response
     {
         if ($user === null) {
-            return $this->json(['error' => 'Patient non trouvé.'], 404);
+            return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
         }
         return $this->json($user, 200, [], 
         [
