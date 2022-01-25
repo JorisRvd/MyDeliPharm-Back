@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -26,7 +27,7 @@ class PatientController extends AbstractController
      * 
      * @Route ("/api/user/patient/", name="api_patient_create", methods={"GET","POST"})
      */
-    public function createPatient( Request $request, UserRepository $user, ManagerRegistry $doctrine, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
+    public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
         
         // Récupérer le contenu JSON
@@ -34,7 +35,7 @@ class PatientController extends AbstractController
         //dd($jsonContent);
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Patient
-            $newPatient = $serializer->deserialize($jsonContent, User::class, 'json');
+            $newPatient = $serializer->deserialize($jsonContent, Patient::class, 'json');
         } catch (NotEncodableValueException $e) {
             // Si le JSON fourni est "malformé" ou manquant, on prévient le client
             return $this->json(
@@ -42,6 +43,11 @@ class PatientController extends AbstractController
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
+        $user = $em->getPartialReference(User::class, 'password' );
+         //hash password
+         $hashedPassword = $userPasswordHasher->hashPassword($user,$newPatient->getUser()->getPassword() );
+         // On écrase le mot de passe en clair par le mot de passe haché
+         $newPatient->setPassword($hashedPassword);
 
          // Valider l'entité
         $errors = $validator->validate($newPatient);
@@ -52,13 +58,6 @@ class PatientController extends AbstractController
             return $this->json($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $newUser = New User();
-        $newPatient = new Patient();
-        $newPatient->setUser($newUser);
-        //hash password
-        $hashedPassword = $userPasswordHasher->hashPassword($newPatient,$user->getPassword() );
-        // On écrase le mot de passe en clair par le mot de passe haché
-        $newPatient->getUser()->setPassword($hashedPassword); 
         
         // On sauvegarde l'entité
         $em = $doctrine->getManager();

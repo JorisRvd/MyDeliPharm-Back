@@ -25,7 +25,7 @@ class Patient
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
-     * @Assert\NotBlank
+     * 
      * @Assert\Positive
      */
     private $weight;
@@ -33,7 +33,7 @@ class Patient
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
-     * @Assert\NotBlank
+     * 
      */
     private $age;
 
