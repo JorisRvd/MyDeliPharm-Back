@@ -35,7 +35,7 @@ class PatientController extends AbstractController
         //dd($jsonContent);
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Patient
-            $newPatient = $serializer->deserialize($jsonContent, User::class, 'json');
+            $newPatient = $serializer->deserialize($jsonContent, Patient::class, 'json');
         } catch (NotEncodableValueException $e) {
             // Si le JSON fourni est "malformé" ou manquant, on prévient le client
             return $this->json(
@@ -47,7 +47,7 @@ class PatientController extends AbstractController
          //hash password
          $hashedPassword = $userPasswordHasher->hashPassword($user,$user->getPassword() );
          // On écrase le mot de passe en clair par le mot de passe haché
-         $newPatient->setPassword($hashedPassword);
+         $newPatient->getUser()->setPassword($hashedPassword);
 
          // Valider l'entité
         $errors = $validator->validate($newPatient);
