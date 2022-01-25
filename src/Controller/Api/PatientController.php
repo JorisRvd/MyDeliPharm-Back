@@ -27,7 +27,7 @@ class PatientController extends AbstractController
      * 
      * @Route ("/api/user/patient/", name="api_patient_create", methods={"GET","POST"})
      */
-    public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
+    public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher, UserInterface $user)
     {
         
         // Récupérer le contenu JSON
@@ -35,7 +35,7 @@ class PatientController extends AbstractController
         //dd($jsonContent);
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Patient
-            $newPatient = $serializer->deserialize($jsonContent, Patient::class, 'json');
+            $newPatient = $serializer->deserialize($jsonContent, User::class, 'json');
         } catch (NotEncodableValueException $e) {
             // Si le JSON fourni est "malformé" ou manquant, on prévient le client
             return $this->json(
@@ -43,9 +43,9 @@ class PatientController extends AbstractController
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
-        $user = $em->getPartialReference(User::class, 'password' );
+        
          //hash password
-         $hashedPassword = $userPasswordHasher->hashPassword($user,$newPatient->getUser()->getPassword() );
+         $hashedPassword = $userPasswordHasher->hashPassword($user,$user->getPassword() );
          // On écrase le mot de passe en clair par le mot de passe haché
          $newPatient->setPassword($hashedPassword);
 
@@ -74,24 +74,30 @@ class PatientController extends AbstractController
      * @Route("/api/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
      * 
      */
-    public function editPatient(ManagerRegistry $doctrine, int $id): Response
+    public function editPatient(Request $request, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, $id): Response
     {
+        // Récupérer le contenu JSON
+        $jsonContent = $request->getContent();
+        // dd($jsonContent);
         $em = $doctrine->getManager();
-        $patient = $em->getRepository(Patient::class)->find($id);
+        //$patient = $em->getRepository(Patient::class)->find($id);
+
+        try {
+            // Désérialiser (convertir) le JSON en entité Doctrine Patient
+            $patient = $serializer->deserialize($jsonContent, Patient::class, 'json')->find($id);
+        } catch (NotEncodableValueException $e) {
+            // Si le JSON fourni est "malformé" ou manquant, on prévient le client
+            return $this->json(
+                ['error' => 'JSON invalide'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
         
         if (!$patient) {
             throw $this->createNotFoundException(
                 'No user found for id '.$id
             );
-        }
-        $patient->setWeight(82); 
-        $patient->setAge(18); 
-        $patient->setVitalCardNumber(11111111); 
-        $patient->setMutuelleNumber(1856158418); 
-        $patient->setStatus(1); 
-        $patient->setOther(''); 
-        $patient->setVitalCardFile(''); 
-        $patient->setMutuelleFile(''); 
+        } 
         
         $em->flush();
 

@@ -70,7 +70,7 @@ class PharmacistController extends AbstractController
     /**
      * Fonction permettant de modifier les infos d'un pharmacien 
      * 
-     * @Route ("/api/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
+     * @Route ("/api/user/pharmacist/{id}", name="api_pharmacist_edit", methods={"PUT"})
      */
     public function edit(ManagerRegistry $doctrine, int $id): Response
     {
