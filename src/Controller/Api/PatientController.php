@@ -74,31 +74,16 @@ class PatientController extends AbstractController
      * @Route("/api/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
      * 
      */
-    public function editPatient(Request $request, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, $id): Response
+    public function editPatient(Request $request, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, int $id): Response
     {
-        // Récupérer le contenu JSON
-        $jsonContent = $request->getContent();
-        // dd($jsonContent);
+        
+        
         $em = $doctrine->getManager();
-        //$patient = $em->getRepository(Patient::class)->find($id);
-
-        try {
-            // Désérialiser (convertir) le JSON en entité Doctrine Patient
-            $patient = $serializer->deserialize($jsonContent, Patient::class, 'json')->find($id);
-        } catch (NotEncodableValueException $e) {
-            // Si le JSON fourni est "malformé" ou manquant, on prévient le client
-            return $this->json(
-                ['error' => 'JSON invalide'],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
         
-        if (!$patient) {
-            throw $this->createNotFoundException(
-                'No user found for id '.$id
-            );
-        } 
+        $patient = $em->getRepository(Patient::class)->find($id);
         
+        $patient = $serializer->deserialize($request->getContent(), Patient::class, 'json');
+         
         $em->flush();
 
         return new JsonResponse([
