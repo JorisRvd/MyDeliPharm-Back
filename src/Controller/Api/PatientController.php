@@ -46,8 +46,8 @@ class PatientController extends AbstractController
         }
         
          //hash password
+         
          $hashedPassword = $userPasswordHasher->hashPassword($newPatient->getUser(),$newPatient->getUser()->getPassword());
-         //dd($hashedPassword);
          // On écrase le mot de passe en clair par le mot de passe haché
          $newPatient->getUser()->setPassword($hashedPassword);
 

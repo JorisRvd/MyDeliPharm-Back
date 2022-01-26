@@ -45,7 +45,7 @@ class UserController  extends AbstractController
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
-        
+        dd($newUser);
         //hash password
         $hashedPassword = $userPasswordHasher->hashPassword($newUser, $newUser->getPassword() );
         

@@ -94,7 +94,10 @@ class Patient
      */
     private $dispensary;
 
-
+    public function __construct()
+    {
+        $this->user = new User(); 
+    }
   
     public function __toString()
     {
