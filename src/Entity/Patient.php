@@ -26,7 +26,7 @@ class Patient
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
      * 
-     * @Assert\Positive
+     * 
      */
     private $weight;
 
@@ -95,10 +95,7 @@ class Patient
     private $dispensary;
 
 
-    public function __construct()
-    {
-        $this->user = new User; 
-    }
+  
     public function __toString()
     {
         return $this->user;

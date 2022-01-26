@@ -16,6 +16,7 @@ class ApiLoginController extends AbstractController
      */
     public function index(?User $user): Response
     {
+        //dd('frefer'); 
         if (null === $user) {
             return $this->json([
                 'message' => 'missing credentials',

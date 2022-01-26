@@ -19,7 +19,7 @@ class AddressController extends AbstractController
     /**
      * Fonction permettant de créer une adresse 
      * 
-     * @Route ("/api/user/address/{id}", name="api_address_create", methods={"GET","POST"})
+     * @Route ("/api/secure/user/address/{id}", name="api_address_create", methods={"GET","POST"})
      */
     public function createAdress( Request $request, EntityManagerInterface $em, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id)
     {
@@ -42,7 +42,7 @@ class AddressController extends AbstractController
     /**
      * Fonction permettant d'afficher une adresse 
      * 
-     * @Route("/api/address/{id}", name="api_address", methods={"GET"})
+     * @Route("/api/secure/address/{id}", name="api_address", methods={"GET"})
      */
     public function getAddress(Address $address = null): Response
     {
@@ -57,7 +57,7 @@ class AddressController extends AbstractController
     
     /**
      * Fonction permettant de supprimer une adresse 
-     * @Route ("/api/address/{id}", name="api_address_delete", methods={"POST", "DELETE"})
+     * @Route ("/api/secure/address/{id}", name="api_address_delete", methods={"POST", "DELETE"})
      */
     public function deleteAddress(ManagerRegistry $doctrine, int $id) : Response
     {
@@ -81,7 +81,7 @@ class AddressController extends AbstractController
     /**
      * Fonction permettant de modifier les infos d'une adresse 
      * 
-     * @Route ("/api/address/{id}", name="api_address_edit", methods={"PUT"})
+     * @Route ("/api/secure/address/{id}", name="api_address_edit", methods={"PUT"})
      */
     public function editAddress(ManagerRegistry $doctrine, int $id): Response
     {

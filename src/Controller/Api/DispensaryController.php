@@ -41,7 +41,7 @@ class DispensaryController extends AbstractController
     /**
      * Fonction permettant d'éditer une officine 
      * 
-     * @Route("/api/address/dispensary/{id}", name="api_dispensary_update",methods={"PUT"})
+     * @Route("/api/secure/address/dispensary/{id}", name="api_dispensary_update",methods={"PUT"})
      */
     public function editDispensary(ManagerRegistry $doctrine, int $id): Response
     {
@@ -67,7 +67,7 @@ class DispensaryController extends AbstractController
     /**
      * Fonction permettant d'afficher l'officine
      * 
-     * @Route("/api/dispensary/{id}", name="api_dispensary",methods={"GET"} )
+     * @Route("/api/secure/dispensary/{id}", name="api_dispensary",methods={"GET"} )
      */
     public function getDispensary(Dispensary $dispensary = null): Response
     {
@@ -83,7 +83,7 @@ class DispensaryController extends AbstractController
         
     /**
      * Fonction permettant de supprimer les données d'un patient 
-     * @Route ("/api/dispensary/{id}", name="api_dispensary_delete", methods={"POST", "DELETE"})
+     * @Route ("/api/secure/dispensary/{id}", name="api_dispensary_delete", methods={"POST", "DELETE"})
      */
     public function delete(ManagerRegistry $doctrine, int $id) : Response
     {

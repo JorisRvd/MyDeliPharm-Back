@@ -16,7 +16,7 @@ class OrderController extends AbstractController
     /**
      * Get order by id
      * 
-     * @Route("/api/order/{id}", name="api_order", methods={"GET"})
+     * @Route("/api/secure/order/{id}", name="api_order", methods={"GET"})
      */
     public function getOrder(Order $order): Response
     {
@@ -32,7 +32,7 @@ class OrderController extends AbstractController
     /**
      * Create new order
      * 
-     * @Route ("/api/order/new", name="api_order_create", methods={"GET","POST"})
+     * @Route ("/api/secure/order/new", name="api_order_create", methods={"GET","POST"})
      * 
      */
     public function createOrder(Request $request, EntityManagerInterface $em, ValidatorInterface $validator)

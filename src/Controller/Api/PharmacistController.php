@@ -53,7 +53,7 @@ class PharmacistController extends AbstractController
     /**
      * Get profil pharmacist
      * 
-     * @Route("/api/user/pharmacist/{id}", name="api_pharmacist", methods={"GET"})
+     * @Route("/api/secure/user/pharmacist/{id}", name="api_pharmacist", methods={"GET"})
      */
     public function getPharmacist(Pharmacist $pharmacist): Response
     {
@@ -70,7 +70,7 @@ class PharmacistController extends AbstractController
     /**
      * Fonction permettant de modifier les infos d'un pharmacien 
      * 
-     * @Route ("/api/user/pharmacist/{id}", name="api_pharmacist_edit", methods={"PUT"})
+     * @Route ("/api/secure/user/pharmacist/{id}", name="api_pharmacist_edit", methods={"PUT"})
      */
     public function edit(ManagerRegistry $doctrine, int $id): Response
     {

@@ -25,9 +25,9 @@ class PatientController extends AbstractController
     /**
      * Fonction permettant de créer un profil patient 
      * 
-     * @Route ("/api/user/patient/", name="api_patient_create", methods={"GET","POST"})
+     * @Route ("/api/user/patient", name="api_patient_create", methods={"GET","POST"})
      */
-    public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher, UserInterface $user)
+    public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
         
         // Récupérer le contenu JSON
@@ -36,6 +36,7 @@ class PatientController extends AbstractController
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Patient
             $newPatient = $serializer->deserialize($jsonContent, Patient::class, 'json');
+            
         } catch (NotEncodableValueException $e) {
             // Si le JSON fourni est "malformé" ou manquant, on prévient le client
             return $this->json(
@@ -45,7 +46,8 @@ class PatientController extends AbstractController
         }
         
          //hash password
-         $hashedPassword = $userPasswordHasher->hashPassword($user,$user->getPassword() );
+         $hashedPassword = $userPasswordHasher->hashPassword($newPatient->getUser(),$newPatient->getUser()->getPassword());
+         //dd($hashedPassword);
          // On écrase le mot de passe en clair par le mot de passe haché
          $newPatient->getUser()->setPassword($hashedPassword);
 
@@ -71,20 +73,25 @@ class PatientController extends AbstractController
     /**
      * Fonction permettant d'éditer un patient 
      * 
-     * @Route("/api/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
+     * @Route("/api/secure/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
      * 
      */
-    public function editPatient(Request $request, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, int $id): Response
+    public function editPatient(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, int $id): Response
     {
         
+        $patient = $entityManager->getRepository(Patient::class)->find($id);
         
-        $em = $doctrine->getManager();
+        $content = $request->getContent(); // Get json from request
         
-        $patient = $em->getRepository(Patient::class)->find($id);
+        // dd($patient); 
         
-        $patient = $serializer->deserialize($request->getContent(), Patient::class, 'json');
-         
-        $em->flush();
+        $updatePatient = $serializer->deserialize($content, Patient::class, 'json');
+        
+      
+        
+       
+        
+        $entityManager->flush();
 
         return new JsonResponse([
             'success_message' => 'Profil patient mis à jour.'
@@ -94,7 +101,7 @@ class PatientController extends AbstractController
     /**
      * Fonction permettant d'accèder aux donnés du patient 
      * 
-     * @Route("/api/user/patient/{id}", name="api_patient", methods={"GET"})
+     * @Route("/api/secure/user/patient/{id}", name="api_patient", methods={"GET"})
      */
     public function getPatient(Patient $patient = null): Response
     {

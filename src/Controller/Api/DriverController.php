@@ -52,7 +52,7 @@ class DriverController extends AbstractController
     }
 
     /**
-     * @Route("/api/user/driver/{id}", name="api_driver",methods={"GET"})
+     * @Route("/api/secure/user/driver/{id}", name="api_driver",methods={"GET"})
      */
     public function getDriver(Driver $driver): Response
     {
@@ -68,7 +68,7 @@ class DriverController extends AbstractController
     /**
      * Edit profil Driver
      * 
-     * @Route("/api/user/driver/{id}", name="api_driver_edit", methods={"PUT"})
+     * @Route("/api/secure/user/driver/{id}", name="api_driver_edit", methods={"PUT"})
      */
     public function edit(ManagerRegistry $doctrine, int $id): Response
     {
