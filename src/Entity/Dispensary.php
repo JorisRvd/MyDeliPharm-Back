@@ -24,18 +24,21 @@ class Dispensary
     /**
      * @ORM\Column(type="smallint")
      * @Assert\NotBlank
+     * @Groups({"get_pharmacist"})
      * 
      */
     private $status;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"get_pharmacist"})
      */
     private $other;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotBlank
+     * @Groups({"get_pharmacist"})
      * 
      */
     private $openingHours;
@@ -43,6 +46,7 @@ class Dispensary
     /**
      * @ORM\OneToOne(targetEntity=Address::class, inversedBy="dispensary", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_pharmacist"})
      */
     private $address;
 

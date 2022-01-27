@@ -13,42 +13,66 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Entity\Driver;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class DriverController extends AbstractController
 {
 
     /**
      * Create profil driver
-     * 
+     *
      * @Route ("/api/user/driver", name="api_driver_create", methods={"GET","POST"})
-     * 
+     *
      */
-    public function createDriver(Request $request, EntityManagerInterface $em, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
+    public function createDriver(Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
-        $user = new User();
-        $user->setFirstname('test');  
-        $user->setLastname('lastname');  
-        $user->setEmail('email');
-        $hashedPassword = $userPasswordHasher->hashPassword($user, "1234");
+        // Récupérer le contenu JSON
+        $jsonContent = $request->getContent();
+        //dd($jsonContent);
+        try {
+            // Désérialiser (convertir) le JSON en entité Doctrine Patient
+            $newDriver = $serializer->deserialize($jsonContent, Driver::class, 'json');
+        } catch (NotEncodableValueException $e) {
+            // Si le JSON fourni est "malformé" ou manquant, on prévient le client
+            return $this->json(
+                ['error' => 'JSON invalide'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+        
+        //hash password
+         
+        $hashedPassword = $userPasswordHasher->hashPassword($newDriver->getUser(), $newDriver->getUser()->getPassword());
         // On écrase le mot de passe en clair par le mot de passe haché
-        $user->setPassword($hashedPassword);  
-        $user->setPhoneNumber('phoneNumber');   
-        $user->setIsAdmin('isAdmin');
-        $newDriver = new Driver();
-        $newDriver->setLocation('Paris');
-        $newDriver->setVehicule('T-Max');
-        $newDriver->setProfilPic('Tmax-en-i.jpeg');
-        $newDriver->setStatus('0');
-        $newDriver->setUser($user);
+        $newDriver->getUser()->setPassword($hashedPassword);
+
+        // Valider l'entité
+        $errors = $validator->validate($newDriver);
+
+        // Y'a-t-il des erreurs ?
+        if (count($errors) > 0) {
+            // @todo Retourner des erreurs de validation propres
+            return $this->json($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         
-        
-        
+        // On sauvegarde l'entité
+        $em = $doctrine->getManager();
         $em->persist($newDriver);
         $em->flush();
-        return new JsonResponse([
-            'success_message' => 'Thank you for registering'
-        ]);
-        
+        //return new JsonResponse([
+        //    'success_message' => 'Thank you for registering'
+        //]);
+        return $this->json(
+            $newDriver,
+            201,
+            [],
+            [
+            'groups' => 'get_collection'
+        ]
+        );
     }
 
     /**
@@ -59,38 +83,40 @@ class DriverController extends AbstractController
         if ($driver === null) {
             return $this->json(['error' => 'livreur non trouvé.'], 404);
         }
-        return $this->json($driver, 200, [], 
-        [
+        return $this->json(
+            $driver,
+            200,
+            [],
+            [
             'groups' => 'get_driver'
-        ]);
+        ]
+        );
     }
 
     /**
      * Edit profil Driver
-     * 
+     *
      * @Route("/api/secure/user/driver/{id}", name="api_driver_edit", methods={"PUT"})
      */
-    public function edit(ManagerRegistry $doctrine, int $id): Response
+    public function editDriver( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id): Response
     {
-        $em = $doctrine->getManager();
-        $driver = $em->getRepository(Driver::class)->find($id);
+        $entityManager = $doctrine->getManager();
         
-        if (!$driver) {
-            throw $this->createNotFoundException(
-                'No driver found for id '.$id
-            );
-        }
+        $driver = $entityManager->getRepository(Driver::class)->find($id);
+        
+        
+        // dd($patient);
+        $content = $request->getContent(); // Get json from request
+        
+        $updateDriver = $serializer->deserialize($content, Driver::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $driver]);
+        
+        
+       
+        
+        $entityManager->flush();
 
-            $driver->setLocation('Paris x');
-            $driver->setVehicule('vélo');
-            $driver->setStatus('1');
-            $driver->setProfilPic('test.jpeg');
-            $em->flush();
-        
-        
-            return new JsonResponse([
-                'success_message' => 'Profil mis à jour.'
-            ]);
+        return new JsonResponse([
+            'success_message' => 'Profil livreur mis à jour.'
+        ]);
     }
-
 }

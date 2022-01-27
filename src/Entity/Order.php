@@ -26,7 +26,7 @@ class Order
     /**
      * @ORM\Column(type="string", length=2048)
      * @Groups({"get_order"})
-     * @Assert\Url
+     * 
      */
     private $prescription;
 

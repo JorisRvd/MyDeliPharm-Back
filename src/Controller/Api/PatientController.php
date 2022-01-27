@@ -17,6 +17,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -65,8 +66,12 @@ class PatientController extends AbstractController
         $em = $doctrine->getManager();
         $em->persist($newPatient);
         $em->flush();
-        return new JsonResponse([
-            'success_message' => 'Thank you for registering'
+        //return new JsonResponse([
+        //    'success_message' => 'Thank you for registering'
+        //]);
+        return $this->json($newPatient, 201, [], 
+        [
+            'groups' => 'get_collection'
         ]);
     }
 
@@ -76,18 +81,18 @@ class PatientController extends AbstractController
      * @Route("/api/secure/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
      * 
      */
-    public function editPatient(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, int $id): Response
+    public function editPatient( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, int $id): Response
     {
+        $entityManager = $doctrine->getManager();
         
         $patient = $entityManager->getRepository(Patient::class)->find($id);
         
-        $content = $request->getContent(); // Get json from request
         
         // dd($patient); 
+        $content = $request->getContent(); // Get json from request
         
-        $updatePatient = $serializer->deserialize($content, Patient::class, 'json');
+        $updatePatient = $serializer->deserialize($content, Patient::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $patient]);
         
-      
         
        
         

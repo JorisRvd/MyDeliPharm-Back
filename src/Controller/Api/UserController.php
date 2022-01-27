@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -45,7 +46,7 @@ class UserController  extends AbstractController
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
-        dd($newUser);
+        
         //hash password
         $hashedPassword = $userPasswordHasher->hashPassword($newUser, $newUser->getPassword() );
         
@@ -114,31 +115,30 @@ class UserController  extends AbstractController
      * 
      * @Route ("/api/secure/user/{id}", name="api_user_edit", methods={"PUT"})
      */
-    public function edit(ManagerRegistry $doctrine, int $id, UserPasswordHasherInterface $userPasswordHasher): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, UserPasswordHasherInterface $userPasswordHasher): Response
     {
-        $em = $doctrine->getManager();
-        $user = $em->getRepository(User::class)->find($id);
+        $entityManager = $doctrine->getManager();
         
-        if (!$user) {
-            throw $this->createNotFoundException(
-                'No user found for id '.$id
-            );
-        }
+        $user = $entityManager->getRepository(User::class)->find($id);
+        
+        
+        // dd($patient); 
+        $content = $request->getContent(); // Get json from request
+        
+        $updateUser = $serializer->deserialize($content, User::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $user]);
+        
+        $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword() );
+        
+        // On écrase le mot de passe en clair par le mot de passe haché
+        $user->setPassword($hashedPassword);
+        
+       
+        
+        $entityManager->flush();
 
-            $user->setFirstname('Steph');  
-            $user->setLastname('Curry');  
-            $user->setEmail('emailtest@gmail.com');
-            $hashedPassword = $userPasswordHasher->hashPassword($user, "1234");
-            // On écrase le mot de passe en clair par le mot de passe haché
-            $user->setPassword($hashedPassword);  
-            $user->setPhoneNumber('065258687458');   
-            $user->setIsAdmin('isAdmin');
-            $em->flush();
-        
-        
-            return new JsonResponse([
-                'success_message' => 'Profil mis à jour.'
-            ]);
+        return new JsonResponse([
+            'success_message' => 'Profil user mis à jour.'
+        ]);
     }
 
     

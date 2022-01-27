@@ -17,32 +17,29 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        login:
+
+        main:
             pattern: ^/api/login
             stateless: true
+            provider: app_user_provider
             json_login:
                 check_path: /api/login_check
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
 
         api_secure:
             pattern:   ^/api/secure
             stateless: true
-            jwt: ~
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
 
         api_public:
-            pattern: ^/api/user/patient/
+            pattern: ^/api/user/(patient|pharmacist)/
             stateless: true
-            
-        main:
-            lazy: true
-            provider: app_user_provider
-            json_login:
-                check_path: api_login
-                username_path: security.credentials.email
-                password_path: security.credentials.password
             
 
             # activate different ways to authenticate
