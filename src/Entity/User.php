@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -15,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
 {
     /**
      * @ORM\Id
@@ -315,5 +316,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->pharmacist = $pharmacist;
 
         return $this;
+    }
+
+    public function __construct($username, array $roles, $id)
+    {
+        $this->username = $username;
+        $this->roles = $roles;
+        $this->id = $id;
+    }
+    
+    public static function createFromPayload($username, array $payload)
+    {
+        return new self(
+            $username,
+            $payload['roles'], // Added by default
+            $payload['id']  // Custom
+        );
     }
 }

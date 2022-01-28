@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
+use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -77,7 +78,7 @@ class UserController  extends AbstractController
      * 
      * @Route("/api/secure/user/{id}", name="api_user", methods={"GET"})
      */
-    public function getUser(User $user = null): Response
+    public function getUserProfil(User $user = null): Response
     {
         if ($user === null) {
             return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
@@ -139,6 +140,27 @@ class UserController  extends AbstractController
         return new JsonResponse([
             'success_message' => 'Profil user mis à jour.'
         ]);
+    }
+
+    /**
+     * Get the profil of the user authenticated 
+     * 
+     * @Route("/api/secure/profil", name="api_user_profil", methods={"GET"})
+     */
+    public function getProfil(): Response
+    {
+        $user = $this->getUser();
+        
+        return $this->json(
+            // Data to serialized
+            $user,
+            // Status code
+            200,
+            // Headers
+            [],
+            // Groups used for the serializer
+            ['groups' => 'get_collection']
+        );
     }
 
     

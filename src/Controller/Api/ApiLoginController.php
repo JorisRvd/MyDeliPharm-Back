@@ -10,61 +10,52 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ApiLoginController extends AbstractController
 {
 
-    private $token;
-
-    public function __construct(TokenStorageInterface $tokenStorage)
-    {
-        $this->token = $tokenStorage;
-    }
-
-
     /**
      * @Route("/api/login", name="api_login", methods={"GET","POST"})
      */
-    public function login(?User $user): Response
+    public function login(): Response
     {
-        
-        //dd($user); 
-        if (null === $user) {
-            return $this->json([
-                'message' => 'missing credentials',
-                ], Response::HTTP_UNAUTHORIZED);
-            }
-            
-           
-               
+         
         return $this->json([
-            'user' => $user->getUserIdentifier(),
-            
-            
-            
-        ]);
+            'user' => $this->getUser() ? $this->getUser()->getId() : null]
+        );
     }
+
 
 
     /**
-     * @Route("/api/user/me", name="get_me")
+     * @Route("/api/user/me", name="get_me", methods={"GET","POST"})
      */
-    public function getMe(): ?User
+    public function newTokenAction(Request $request)
     {
-        $token = $this->tokenStorage->getToken();
+        $user = $this->getDoctrine()
+            ->getRepository('User')
+            ->findOneBy(['email' => $request->getUser()]);
+            if (!$user) {
+                throw $this->createNotFoundException();
+            }
+            
+            $isValid = $this->get('security.password_encoder')
+            ->isPasswordValid($user, $request->getPassword());
+        if (!$isValid) {
+            throw new BadCredentialsException();
+        }
 
-        if (!$token) {
-            return null;
-        }
-    
-        $user = $token->getUser();
-    
-        if (!$user instanceof User) {
-            return null;
-        }
-    
-        return $user;
+        $token = $this->get('lexik_jwt_authentication.encoder')
+            ->encode([
+                'username' => $user->getUsername(),
+                'exp' => time() + 3600 // 1 hour expiration
+            ]);
+
+            return new JsonResponse(['token' => $token]);
     }
-
 }
