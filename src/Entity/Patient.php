@@ -24,7 +24,7 @@ class Patient
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"get_collection"})
+     * @Groups({"get_collection"}, {"get_patient"})
      * 
      * 
      */
@@ -32,7 +32,7 @@ class Patient
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"get_collection"})
+     * @Groups({"get_collection"}, {"get_patient"})
      * 
      */
     private $age;
@@ -41,6 +41,7 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
+     * @Groups({"get_collection"}, {"get_patient"})
      * 
      */
     private $vitalCardNumber;
@@ -49,7 +50,7 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
-     * 
+     * @Groups({"get_collection"}, {"get_patient"})
      */
     private $mutuelleNumber;
 
@@ -79,12 +80,13 @@ class Patient
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"get_collection"})
+     * 
      */
     private $user;
 
     /**
      * @ORM\OneToOne(targetEntity=Order::class, mappedBy="patient", cascade={"persist", "remove"})
+     * 
      */
     private $orders;
 

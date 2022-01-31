@@ -22,14 +22,14 @@ class Driver
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get_driver"})
+     * @Groups({"get_collection"},{"get_driver"})
      * @Assert\NotBlank
      */
     private $location;
 
     /**
      * @ORM\Column(type="string", length=50)
-     * @Groups({"get_driver"})
+     * @Groups({"get_collection"},{"get_driver"})
      * @Assert\NotBlank
      */
     private $vehicule;
@@ -37,6 +37,7 @@ class Driver
     /**
      * @ORM\Column(type="smallint")
      * @Assert\NotBlank
+     * @Groups({"get_collection"},{"get_driver"})
      */
     private $status;
 
@@ -50,7 +51,7 @@ class Driver
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="driver", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"get_driver"})
+     * 
      */
     private $user;
 

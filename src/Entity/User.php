@@ -28,7 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * 
      * @Assert\NotBlank
      * 
@@ -52,26 +52,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=15)
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      */
      
     private $isAdmin;
@@ -85,19 +85,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
-     * @Groups({"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"})
      */
     private $patient;
 
     /**
      * @ORM\OneToOne(targetEntity=Driver::class, mappedBy="user", cascade={"persist", "remove"})
-     * @Groups({"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"})
      */
     private $driver;
 
     /**
      * @ORM\OneToOne(targetEntity=Pharmacist::class, mappedBy="user", cascade={"persist", "remove"})
-     * 
+     * @Groups({"get_collection"})
      */
     private $pharmacist;
 

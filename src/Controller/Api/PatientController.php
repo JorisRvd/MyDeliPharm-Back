@@ -108,14 +108,14 @@ class PatientController extends AbstractController
      * 
      * @Route("/api/secure/user/patient/{id}", name="api_patient", methods={"GET"})
      */
-    public function getPatient(Patient $patient = null): Response
+    public function getPatient(Patient $patient = null, $id): Response
     {
         if ($patient === null) {
             return $this->json(['error' => 'Patient non trouvé.'], 404);
         }
         return $this->json($patient, 200, [], 
         [
-            'groups' => 'get_collection'
+            'groups' => 'get_patient'
         ]);
     
     }

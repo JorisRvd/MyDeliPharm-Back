@@ -24,7 +24,7 @@ class Pharmacist
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"get_pharmacist"})
+     * @Groups({"get_collection"},{"get_pharmacist"})
      * 
      * 
      * 
@@ -33,7 +33,7 @@ class Pharmacist
 
     /**
      * @ORM\Column(type="smallint")
-     * @Groups({"get_pharmacist"})
+     * @Groups({"get_collection"},{"get_pharmacist"})
      * @Assert\NotBlank
      * 
      */
@@ -49,7 +49,7 @@ class Pharmacist
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="pharmacist", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"get_pharmacist"}, {"get_collection"})
+     * 
      */
     private $user;
 
