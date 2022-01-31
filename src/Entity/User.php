@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -318,19 +318,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, JWTUser
         return $this;
     }
 
-    public function __construct($username, array $roles, $id)
-    {
-        $this->username = $username;
-        $this->roles = $roles;
-        $this->id = $id;
-    }
     
-    public static function createFromPayload($username, array $payload)
-    {
-        return new self(
-            $username,
-            $payload['roles'], // Added by default
-            $payload['id']  // Custom
-        );
-    }
 }

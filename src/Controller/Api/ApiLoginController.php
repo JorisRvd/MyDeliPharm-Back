@@ -32,30 +32,17 @@ class ApiLoginController extends AbstractController
 
 
 
-    /**
-     * @Route("/api/user/me", name="get_me", methods={"GET","POST"})
+   /**
+     * Logout
+     * 
+     * @Route("/api/secure/logout", name="api_login_logout")
      */
-    public function newTokenAction(Request $request)
+    public function logout()
     {
-        $user = $this->getDoctrine()
-            ->getRepository('User')
-            ->findOneBy(['email' => $request->getUser()]);
-            if (!$user) {
-                throw $this->createNotFoundException();
-            }
-            
-            $isValid = $this->get('security.password_encoder')
-            ->isPasswordValid($user, $request->getPassword());
-        if (!$isValid) {
-            throw new BadCredentialsException();
-        }
-
-        $token = $this->get('lexik_jwt_authentication.encoder')
-            ->encode([
-                'username' => $user->getUsername(),
-                'exp' => time() + 3600 // 1 hour expiration
-            ]);
-
-            return new JsonResponse(['token' => $token]);
+        // Ce code ne sera jamais exécuté
+        // le composant de sécurité va intercepter la requête avant.
+        return new JsonResponse([
+            'success_message' => 'Déconnexion.'
+        ]);
     }
 }
