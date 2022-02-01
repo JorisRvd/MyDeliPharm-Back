@@ -28,8 +28,6 @@ class Order
     private $id;
 
     /**
-     * 
-     * @Groups({"get_order"})
      * @Vich\UploadableField(mapping="order_image", fileNameProperty="prescriptionImage")
      * 
      */
@@ -54,7 +52,8 @@ class Order
     private $status;
 
     /**
-     * @ORM\OneToOne(targetEntity=Patient::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @Groups({"get_order"})
      */
     private $patient;
 
@@ -67,11 +66,6 @@ class Order
      * @ORM\OneToOne(targetEntity=Pharmacist::class, inversedBy="orders", cascade={"persist", "remove"})
      */
     private $pharmacist;
-
-
-
-
-
 
     public function getId(): ?int
     {
@@ -167,3 +161,8 @@ class Order
         return $this;
     }
 }
+
+
+
+
+

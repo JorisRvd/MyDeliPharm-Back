@@ -31,17 +31,17 @@ class OrderController extends AbstractController
         }
         return $this->json($order, 200, [], 
         [
-            'groups' => 'get_order'
+            'groups' => 'get_order', 'get_patient', 'get_collection'
         ]);
     }
 
     /**
      * Create new order
      * 
-     * @Route ("/api/secure/order/new/", name="api_order_create", methods={"GET","POST"})
+     * @Route ("/api/secure/order/new/{id}", name="api_order_create", methods={"GET","POST"})
      * 
      */
-    public function createOrder(int $id, Patient $patient, Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function createOrder( Patient $patient, Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
     {
         
         // Récupérer le contenu JSON
@@ -50,7 +50,7 @@ class OrderController extends AbstractController
         //dd($newOrder);
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Order
-            $patient = $serializer->deserialize($jsonContent, Patient::class, 'json');
+            $newOrder = $serializer->deserialize($jsonContent, Order::class, 'json');
             
         } catch (NotEncodableValueException $e) {
             // Si le JSON fourni est "malformé" ou manquant, on prévient le client
@@ -61,9 +61,8 @@ class OrderController extends AbstractController
         }
         
 
-        $newOrder = new Order();
+        
         $newOrder->setSafetyCode(0000);
-        $newOrder->setStatus(0);
         $newOrder->setPatient($patient);
 
          // Valider l'entité
@@ -98,18 +97,18 @@ class OrderController extends AbstractController
      * @Route ("/api/secure/order/new/{id}/image", name="api_order_create_image", methods={"GET","POST"})
      * 
      */
-    public function createImages(Request $request, ValidatorInterface $validator) : Response
+    public function createImages(Request $request, ValidatorInterface $validator, Order $order, ManagerRegistry $doctrine) : Response
     {
          // On passe directement par l'objet Request pour récupérer l'image
-         $uploadedFile = $request->files->get('prescriptionImage');
+         $prescriptionImage = $request->files->get('prescriptionImage');
 
          // Exception Erreur 400 si image non présente
-         if (!$uploadedFile) {
+         if (!$prescriptionImage) {
              throw new BadRequestHttpException('"prescriptionImage" is required');
          }
  
          // Optionnel (recommandé) : Validation du fichier
-         $errors = $validator->validate($uploadedFile, [
+         $errors = $validator->validate($prescriptionImage, [
              // Contrainte image
    
          ]);
@@ -120,8 +119,13 @@ class OrderController extends AbstractController
  
          $destination = $this->getParameter('kernel.project_dir').'/public/uploads/images/order';
          
+         $order->setPrescriptionImage($destination); 
+
+         $em = $doctrine->getManager();
          
-         $uploadedFile->move($destination);
+         $em->flush();
+
+         $prescriptionImage->move($destination);
          
          return new JsonResponse([
             'success_message' => 'Image upload'

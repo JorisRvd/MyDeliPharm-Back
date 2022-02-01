@@ -2,12 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
+use App\Entity\Order;
+use App\Entity\Dispensary;
+use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PatientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Entity\User;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
+
 
 
 
@@ -20,21 +24,23 @@ class Patient
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
+     * @Groups({"get_order"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     *
      * @Groups({"get_collection"}, {"get_patient"})
-     * 
-     * 
+     * @Groups({"get_order"})
      */
     private $weight;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_order"})
      * 
      */
     private $age;
@@ -43,7 +49,7 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
-     * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
      * 
      */
     private $vitalCardNumber;
@@ -52,7 +58,7 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
-     * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
      */
     private $mutuelleNumber;
 
@@ -63,7 +69,7 @@ class Patient
 
     /**
      * @ORM\Column(type="smallint", nullable=true)
-     * @Groups({"get_collection"})
+     * @Groups({"get_collection"}, {"get_order"})
      */
     private $status;
 
@@ -82,13 +88,16 @@ class Patient
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_order"})
      * 
      */
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity=Order::class, mappedBy="patient", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="patient", orphanRemoval=true)
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"get_patient"})
      */
     private $orders;
 

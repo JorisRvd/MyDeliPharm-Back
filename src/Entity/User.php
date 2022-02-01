@@ -23,13 +23,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
-     * 
+     * @Groups({"get_order"})
      * @Assert\NotBlank
      * 
      * 
@@ -53,6 +54,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     * @Groups({"get_order"})
      */
     private $firstname;
 
@@ -60,12 +62,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     * @Groups({"get_order"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=15)
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     *  @Groups({"get_order"})
      */
     private $phoneNumber;
 
