@@ -10,6 +10,7 @@ use App\Entity\User;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
+
 /**
  * @ORM\Entity(repositoryClass=PatientRepository::class)
  */
@@ -19,11 +20,12 @@ class Patient
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"}, {"get_patient"})
      */
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"get_collection"}, {"get_patient"})
      * 
      * 
@@ -31,7 +33,7 @@ class Patient
     private $weight;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"get_collection"}, {"get_patient"})
      * 
      */
@@ -60,7 +62,7 @@ class Patient
     private $other;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", nullable=true)
      * @Groups({"get_collection"})
      */
     private $status;
@@ -86,7 +88,7 @@ class Patient
 
     /**
      * @ORM\OneToOne(targetEntity=Order::class, mappedBy="patient", cascade={"persist", "remove"})
-     * 
+     * @ORM\JoinColumn(nullable=true)
      */
     private $orders;
 

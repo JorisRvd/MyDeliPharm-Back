@@ -66,13 +66,13 @@ class PatientController extends AbstractController
         $em = $doctrine->getManager();
         $em->persist($newPatient);
         $em->flush();
-        //return new JsonResponse([
-        //    'success_message' => 'Thank you for registering'
-        //]);
-        return $this->json($newPatient, 201, [], 
-        [
-            'groups' => 'get_collection'
+        return new JsonResponse([
+          'success_message' => 'Thank you for registering'
         ]);
+        // return $this->json($newPatient, 201, [], 
+        // [
+        //     'groups' => 'get_collection', 'get_patient'
+        // ]);
     }
 
     /**

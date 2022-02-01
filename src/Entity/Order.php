@@ -3,15 +3,19 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
  * @ORM\Table(name="`order`")
+ * @Vich\Uploadable
  */
 class Order
 {
@@ -24,12 +28,17 @@ class Order
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=2048)
+     * 
      * @Groups({"get_order"})
+     * @Vich\UploadableField(mapping="order_image", fileNameProperty="prescriptionImage")
      * 
      */
     private $prescription;
-
+    
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $prescriptionImage;
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
@@ -59,17 +68,27 @@ class Order
      */
     private $pharmacist;
 
+
+
+
+
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getPrescription(): ?string
+    public function getPrescription()
     {
         return $this->prescription;
     }
-
-    public function setPrescription(string $prescription): self
+    /**
+     * Undocumented function
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     * 
+     */
+    public function setPrescription(?File $prescription = null)
     {
         $this->prescription = $prescription;
 
@@ -132,6 +151,18 @@ class Order
     public function setPharmacist(?Pharmacist $pharmacist): self
     {
         $this->pharmacist = $pharmacist;
+
+        return $this;
+    }
+
+    public function getPrescriptionImage(): ?string
+    {
+        return $this->prescriptionImage;
+    }
+
+    public function setPrescriptionImage(?string $prescriptionImage): self
+    {
+        $this->prescriptionImage = $prescriptionImage;
 
         return $this;
     }

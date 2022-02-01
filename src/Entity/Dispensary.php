@@ -45,7 +45,7 @@ class Dispensary
 
     /**
      * @ORM\OneToOne(targetEntity=Address::class, inversedBy="dispensary", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"get_pharmacist"})
      */
     private $address;
