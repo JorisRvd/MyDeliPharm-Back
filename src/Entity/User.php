@@ -28,6 +28,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     /**
+     * @ORM\Column(type="smallint", nullable=true)
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
+     */
+    private $gender;
+
+    /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
@@ -82,6 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         
     /**
      * @ORM\OneToMany(targetEntity=Address::class, mappedBy="user", orphanRemoval=true)
+     * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      * 
      */
@@ -105,9 +113,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $pharmacist;
 
+    
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getGender(): ?int
+    {
+        return $this->gender;
+    }
+
+    public function setGender(?int $gender): self
+    {
+        $this->gender = $gender;
+
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -321,6 +343,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 
     
 }

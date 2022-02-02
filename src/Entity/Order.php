@@ -23,6 +23,7 @@ class Order
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_driver"})
      * @Groups({"get_patient"})
@@ -31,7 +32,8 @@ class Order
     private $id;
 
     /**
-     * 
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      * @Groups({"get_driver"})
      * @Groups({"get_patient"})
      * 
@@ -40,12 +42,15 @@ class Order
     
     /**
      *  @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      *  @Groups({"get_driver"})
      *  @Groups({"get_patient"})
      */
     private $prescriptionImage;
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Assert\NotBlank
      * @Groups({"get_driver"})
@@ -54,6 +59,7 @@ class Order
 
     /**
      * @ORM\Column(type="smallint")
+     * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_patient"})
      * @Assert\NotBlank
@@ -64,16 +70,19 @@ class Order
      * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="orders", cascade={"persist", "remove"})
      * @Groups({"get_order"})
      * 
+     * 
      */
     private $patient;
 
     /**
      * @ORM\ManyToOne(targetEntity=Driver::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @Groups({"get_order"})
      */
     private $driver;
 
     /**
      * @ORM\ManyToOne(targetEntity=Pharmacist::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @Groups({"get_order"})
      */
     private $pharmacist;
 

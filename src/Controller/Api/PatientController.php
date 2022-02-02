@@ -27,7 +27,7 @@ class PatientController extends AbstractController
     /**
      * Fonction permettant de créer un profil patient 
      * 
-     * @Route ("clear", name="api_patient_create", methods={"GET","POST"})
+     * @Route ("/api/user/patient", name="api_patient_create", methods={"GET","POST"})
      */
     public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {

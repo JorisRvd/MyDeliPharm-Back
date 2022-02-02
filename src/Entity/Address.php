@@ -18,12 +18,14 @@ class Address
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Groups({"get_address"},{"get_pharmacist"})
+     * @Groups({"get_collection"})
      * @Assert\NotBlank
      */
     private $street;
@@ -31,6 +33,7 @@ class Address
     /**
      * @ORM\Column(type="string", length=5)
      * @Groups({"get_address"},{"get_pharmacist"})
+     * @Groups({"get_collection"})
      * @Assert\NotBlank
      *
      */
@@ -39,6 +42,7 @@ class Address
     /**
      * @ORM\Column(type="string", length=50)
      * @Groups({"get_address"},{"get_pharmacist"})
+     * @Groups({"get_collection"})
      * @Assert\NotBlank
      */
     private $city;

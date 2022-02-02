@@ -33,7 +33,7 @@ class OrderController extends AbstractController
         }
         return $this->json($order, 200, [], 
         [
-            'groups' => 'get_order', 'get_patient', 'get_collection'
+            'groups' => 'get_order'
         ]);
     }
 
