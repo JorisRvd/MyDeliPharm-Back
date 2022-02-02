@@ -12,29 +12,36 @@ security:
             entity:
                 class: App\Entity\User
                 property: email
-        # used to reload user from session & other features (e.g. switch_user)
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        login:
+
+        main:
             pattern: ^/api/login
             stateless: true
-            json_login:
-                check_path: /api/login_check
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-        api:
-            pattern:   ^/api
-            stateless: true
-            jwt: ~
-        main:
-            lazy: true
             provider: app_user_provider
             json_login:
-                check_path: api_login
-                username_path: security.credentials.email
-                password_path: security.credentials.password
+                check_path: /api/login_check
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
+            logout:
+                path: api_login_logout
+
+        api_secure:
+            pattern: ^/api/secure
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+        api_public:
+            pattern: ^/api/user/(patient|pharmacist)/
+            stateless: true
             
 
             # activate different ways to authenticate
@@ -46,9 +53,13 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/api/user/patient/, roles: PUBLIC_ACCESS }
+        - { path: ^/api/user/, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
+
+   
 
 when@test:
     security:

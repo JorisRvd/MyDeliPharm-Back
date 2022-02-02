@@ -1,0 +1,12 @@
+vich_uploader:
+    db_driver: orm
+    mappings:
+        order_image:
+            uri_prefix: '%app.path.order_images%'
+            upload_destination: '%kernel.project_dir%/../web%app.path.order_images%'
+            namer : 
+                 service : Vich\UploaderBundle\Naming\PropertyNamer
+
+            inject_on_load: true
+            delete_on_update: true
+            delete_on_remove: true

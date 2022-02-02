@@ -23,14 +23,14 @@ class Address
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get_address"})
+     * @Groups({"get_address"},{"get_pharmacist"})
      * @Assert\NotBlank
      */
     private $street;
 
     /**
      * @ORM\Column(type="string", length=5)
-     * @Groups({"get_address"})
+     * @Groups({"get_address"},{"get_pharmacist"})
      * @Assert\NotBlank
      *
      */
@@ -38,13 +38,13 @@ class Address
 
     /**
      * @ORM\Column(type="string", length=50)
-     * @Groups({"get_address"})
+     * @Groups({"get_address"},{"get_pharmacist"})
      * @Assert\NotBlank
      */
     private $city;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="address")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="address",cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"get_address"})
      */

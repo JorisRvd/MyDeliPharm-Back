@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -21,13 +22,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
-     * 
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     * @Groups({"get_order"})
      * @Assert\NotBlank
      * 
      * 
@@ -50,26 +53,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     * @Groups({"get_order"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=50)
      * @Assert\NotBlank
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     * @Groups({"get_order"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=15)
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     *  @Groups({"get_order"})
      */
     private $phoneNumber;
 
     /**
      * @ORM\Column(type="boolean")
-     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      */
      
     private $isAdmin;
@@ -83,19 +89,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\OneToOne(targetEntity=Patient::class, mappedBy="user", cascade={"persist", "remove"})
-     * @Groups({"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"})
      */
     private $patient;
 
     /**
      * @ORM\OneToOne(targetEntity=Driver::class, mappedBy="user", cascade={"persist", "remove"})
-     * @Groups({"get_pharmacist"}, {"get_driver"})
+     * @Groups({"get_collection"})
      */
     private $driver;
 
     /**
      * @ORM\OneToOne(targetEntity=Pharmacist::class, mappedBy="user", cascade={"persist", "remove"})
-     * 
+     * @Groups({"get_collection"})
      */
     private $pharmacist;
 
@@ -315,4 +321,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    
 }

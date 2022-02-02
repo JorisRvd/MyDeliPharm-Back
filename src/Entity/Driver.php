@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DriverRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,14 +24,14 @@ class Driver
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get_driver"})
+     * @Groups({"get_collection"},{"get_driver"})
      * @Assert\NotBlank
      */
     private $location;
 
     /**
      * @ORM\Column(type="string", length=50)
-     * @Groups({"get_driver"})
+     * @Groups({"get_collection"},{"get_driver"})
      * @Assert\NotBlank
      */
     private $vehicule;
@@ -37,29 +39,35 @@ class Driver
     /**
      * @ORM\Column(type="smallint")
      * @Assert\NotBlank
+     * @Groups({"get_collection"},{"get_driver"})
      */
     private $status;
 
     /**
      * @ORM\Column(type="string", length=2048)
      * @Groups({"get_driver"})
-     * @Assert\Url
+     * 
      */
     private $profilPic;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="driver", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"get_driver"})
+     * 
      */
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity=Order::class, mappedBy="driver", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="driver", cascade={"persist", "remove"})
      * @Groups({"get_driver"})
      */
     private $orders;
 
+    public function __construct()
+    {
+        $this->orders = new ArrayCollection();
+        
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -124,26 +132,33 @@ class Driver
 
         return $this;
     }
-
-    public function getOrders(): ?Order
+    
+    /**
+    *@return Collection|Order[]
+    */
+    public function getOrders(): Collection
     {
         return $this->orders;
     }
 
-    public function setOrders(?Order $orders): self
+    public function addOrders(Order $order): self
     {
-        // unset the owning side of the relation if necessary
-        if ($orders === null && $this->orders !== null) {
-            $this->orders->setDriver(null);
+        if(!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setDriver($this);
         }
 
-        // set the owning side of the relation if necessary
-        if ($orders !== null && $orders->getDriver() !== $this) {
-            $orders->setDriver($this);
+        return $this; 
+    }
+
+    public function removeorders(Order $order) : self
+    {
+        if ($this->orders->removeElement(($order))) {
+
+            if($order->getDriver() === $this) {
+                $order->setDriver(null);
+            }
         }
-
-        $this->orders = $orders;
-
         return $this;
     }
 }

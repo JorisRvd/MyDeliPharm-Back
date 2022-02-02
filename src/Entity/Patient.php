@@ -2,12 +2,18 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
+use App\Entity\Order;
+use App\Entity\Dispensary;
+use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PatientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Serializer\Annotation\Groups;
-use App\Entity\User;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
+
+
 
 
 /**
@@ -19,21 +25,25 @@ class Patient
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
+     * @Groups({"get_order"})
+     * @Groups({"get_patient"})
      */
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Groups({"get_collection"})
-     * @Assert\NotBlank
-     * @Assert\Positive
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"get_patient"})
+     * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_order"})
      */
     private $weight;
 
     /**
-     * @ORM\Column(type="integer")
-     * @Groups({"get_collection"})
-     * @Assert\NotBlank
+     * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_order"})
+     * @Groups({"get_patient"})
      */
     private $age;
 
@@ -41,7 +51,8 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
-     * 
+     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
+     * @Groups({"get_patient"})
      */
     private $vitalCardNumber;
 
@@ -49,7 +60,8 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
-     * 
+     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
+     * @Groups({"get_patient"})
      */
     private $mutuelleNumber;
 
@@ -59,8 +71,8 @@ class Patient
     private $other;
 
     /**
-     * @ORM\Column(type="smallint")
-     * @Groups({"get_collection"})
+     * @ORM\Column(type="smallint", nullable=true)
+     * @Groups({"get_collection"}, {"get_order"})
      */
     private $status;
 
@@ -79,12 +91,17 @@ class Patient
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="patient", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"get_collection"})
+     * @Groups({"get_patient"})
+     * @Groups({"get_order"})
+     * 
      */
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity=Order::class, mappedBy="patient", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="patient", orphanRemoval=true)
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"get_patient"})
+     * 
      */
     private $orders;
 
@@ -94,11 +111,12 @@ class Patient
      */
     private $dispensary;
 
-
     public function __construct()
     {
-        $this->user = new User; 
+        $this->user = new User(); 
+        $this->orders = new ArrayCollection();
     }
+  
     public function __toString()
     {
         return $this->user;
@@ -216,24 +234,32 @@ class Patient
         return $this;
     }
 
-    public function getOrders(): ?Order
+    /**
+     * @return Collection|Order[]
+     */
+    public function getOrders(): Collection
     {
         return $this->orders;
     }
 
-    public function setOrders(?Order $orders): self
+    public function addPatient(Order $order): self
     {
-        // unset the owning side of the relation if necessary
-        if ($orders === null && $this->orders !== null) {
-            $this->orders->setPatient(null);
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setPatient($this);
         }
 
-        // set the owning side of the relation if necessary
-        if ($orders !== null && $orders->getPatient() !== $this) {
-            $orders->setPatient($this);
-        }
+        return $this;
+    }
 
-        $this->orders = $orders;
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getPatient() === $this) {
+                $order->setPatient(null);
+            }
+        }
 
         return $this;
     }

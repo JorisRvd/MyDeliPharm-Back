@@ -24,16 +24,16 @@ class Pharmacist
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"get_pharmacist"})
-     * @Assert\Unique
-     * @Assert\NotBlank
-     * @Assert\Positive
+     * @Groups({"get_collection"},{"get_pharmacist"})
+     * 
+     * 
+     * 
      */
     private $rppsNumber;
 
     /**
      * @ORM\Column(type="smallint")
-     * @Groups({"get_pharmacist"})
+     * @Groups({"get_collection"},{"get_pharmacist"})
      * @Assert\NotBlank
      * 
      */
@@ -49,19 +49,18 @@ class Pharmacist
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="pharmacist", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"get_pharmacist"})
+     * 
      */
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity=Order::class, mappedBy="pharmacist", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="pharmacist", cascade={"persist", "remove"})
      * @Groups({"get_pharmacist"})
      */
     private $orders;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Dispensary::class, inversedBy="pharmacist")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity=Dispensary::class, inversedBy="pharmacist",cascade={"persist"})
      * @Groups({"get_pharmacist"})
      */
     private $dispensary;

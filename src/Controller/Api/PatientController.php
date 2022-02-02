@@ -2,9 +2,10 @@
 
 namespace App\Controller\Api;
 
-
+use App\Entity\Order;
 use App\Entity\Patient;
 use App\Entity\User;
+use App\Repository\OrderRepository;
 use App\Repository\PatientRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -24,9 +27,9 @@ class PatientController extends AbstractController
     /**
      * Fonction permettant de créer un profil patient 
      * 
-     * @Route ("/api/user/patient/", name="api_patient_create", methods={"GET","POST"})
+     * @Route ("clear", name="api_patient_create", methods={"GET","POST"})
      */
-    public function createPatient( Request $request, UserRepository $user, ManagerRegistry $doctrine, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
+    public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
         
         // Récupérer le contenu JSON
@@ -34,7 +37,8 @@ class PatientController extends AbstractController
         //dd($jsonContent);
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Patient
-            $newPatient = $serializer->deserialize($jsonContent, User::class, 'json');
+            $newPatient = $serializer->deserialize($jsonContent, Patient::class, 'json');
+            
         } catch (NotEncodableValueException $e) {
             // Si le JSON fourni est "malformé" ou manquant, on prévient le client
             return $this->json(
@@ -42,6 +46,14 @@ class PatientController extends AbstractController
                 Response::HTTP_UNPROCESSABLE_ENTITY
             );
         }
+        
+         //hash password
+         
+         $hashedPassword = $userPasswordHasher->hashPassword($newPatient->getUser(),$newPatient->getUser()->getPassword());
+         // On écrase le mot de passe en clair par le mot de passe haché
+         $newPatient->getUser()->setPassword($hashedPassword);
+         
+         $newPatient->getUser()->setRoles(["ROLE_PATIENT"]); 
 
          // Valider l'entité
         $errors = $validator->validate($newPatient);
@@ -52,49 +64,42 @@ class PatientController extends AbstractController
             return $this->json($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
-        $newUser = New User();
-        $newPatient = new Patient();
-        $newPatient->setUser($newUser);
-        //hash password
-        $hashedPassword = $userPasswordHasher->hashPassword($newPatient,$user->getPassword() );
-        // On écrase le mot de passe en clair par le mot de passe haché
-        $newPatient->getUser()->setPassword($hashedPassword); 
         
         // On sauvegarde l'entité
         $em = $doctrine->getManager();
         $em->persist($newPatient);
         $em->flush();
         return new JsonResponse([
-            'success_message' => 'Thank you for registering'
+          'success_message' => 'Thank you for registering'
         ]);
+        // return $this->json($newPatient, 201, [], 
+        // [
+        //     'groups' => 'get_collection', 'get_patient'
+        // ]);
     }
 
     /**
      * Fonction permettant d'éditer un patient 
      * 
-     * @Route("/api/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
+     * @Route("/api/secure/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
      * 
      */
-    public function editPatient(ManagerRegistry $doctrine, int $id): Response
+    public function editPatient( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, int $id): Response
     {
-        $em = $doctrine->getManager();
-        $patient = $em->getRepository(Patient::class)->find($id);
+        $entityManager = $doctrine->getManager();
         
-        if (!$patient) {
-            throw $this->createNotFoundException(
-                'No user found for id '.$id
-            );
-        }
-        $patient->setWeight(82); 
-        $patient->setAge(18); 
-        $patient->setVitalCardNumber(11111111); 
-        $patient->setMutuelleNumber(1856158418); 
-        $patient->setStatus(1); 
-        $patient->setOther(''); 
-        $patient->setVitalCardFile(''); 
-        $patient->setMutuelleFile(''); 
+        $patient = $entityManager->getRepository(Patient::class)->find($id);
         
-        $em->flush();
+        
+        // dd($patient); 
+        $content = $request->getContent(); // Get json from request
+        
+        $updatePatient = $serializer->deserialize($content, Patient::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $patient]);
+        
+        
+       
+        
+        $entityManager->flush();
 
         return new JsonResponse([
             'success_message' => 'Profil patient mis à jour.'
@@ -104,19 +109,18 @@ class PatientController extends AbstractController
     /**
      * Fonction permettant d'accèder aux donnés du patient 
      * 
-     * @Route("/api/user/patient/{id}", name="api_patient", methods={"GET"})
+     * @Route("/api/secure/user/patient/{id}", name="api_patient", methods={"GET"})
      */
-    public function getPatient(Patient $patient = null): Response
+    public function getPatient(Patient $patient = null, $id): Response
     {
         if ($patient === null) {
             return $this->json(['error' => 'Patient non trouvé.'], 404);
         }
         return $this->json($patient, 200, [], 
         [
-            'groups' => 'get_collection'
+            'groups' => 'get_patient'
         ]);
     
     }
           
-
 }

@@ -3,15 +3,19 @@
 namespace App\Entity;
 
 use App\Repository\OrderRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Vich\UploaderBundle\Entity\File as EmbeddedFile;
 
 
 /**
  * @ORM\Entity(repositoryClass=OrderRepository::class)
  * @ORM\Table(name="`order`")
+ * @Vich\Uploadable
  */
 class Order
 {
@@ -20,42 +24,56 @@ class Order
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
+     * @Groups({"get_driver"})
+     * @Groups({"get_patient"})
+     * 
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=2048)
-     * @Groups({"get_order"})
-     * @Assert\Url
+     * 
+     * @Groups({"get_driver"})
+     * @Groups({"get_patient"})
+     * 
      */
     private $prescription;
-
+    
+    /**
+     *  @ORM\Column(type="string", length=255, nullable=true)
+     *  @Groups({"get_driver"})
+     *  @Groups({"get_patient"})
+     */
+    private $prescriptionImage;
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
      * @Assert\NotBlank
+     * @Groups({"get_driver"})
      */
     private $safetyCode;
 
     /**
      * @ORM\Column(type="smallint")
      * @Groups({"get_order"})
+     * @Groups({"get_patient"})
      * @Assert\NotBlank
      */
     private $status;
 
     /**
-     * @ORM\OneToOne(targetEntity=Patient::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @Groups({"get_order"})
+     * 
      */
     private $patient;
 
     /**
-     * @ORM\OneToOne(targetEntity=Driver::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Driver::class, inversedBy="orders", cascade={"persist", "remove"})
      */
     private $driver;
 
     /**
-     * @ORM\OneToOne(targetEntity=Pharmacist::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Pharmacist::class, inversedBy="orders", cascade={"persist", "remove"})
      */
     private $pharmacist;
 
@@ -64,12 +82,17 @@ class Order
         return $this->id;
     }
 
-    public function getPrescription(): ?string
+    public function getPrescription()
     {
         return $this->prescription;
     }
-
-    public function setPrescription(string $prescription): self
+    /**
+     * Undocumented function
+     *
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile|null $imageFile
+     * 
+     */
+    public function setPrescription(?File $prescription = null)
     {
         $this->prescription = $prescription;
 
@@ -135,4 +158,21 @@ class Order
 
         return $this;
     }
+
+    public function getPrescriptionImage(): ?string
+    {
+        return $this->prescriptionImage;
+    }
+
+    public function setPrescriptionImage(?string $prescriptionImage): self
+    {
+        $this->prescriptionImage = $prescriptionImage;
+
+        return $this;
+    }
 }
+
+
+
+
+

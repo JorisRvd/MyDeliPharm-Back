@@ -13,36 +13,61 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 
 class AddressController extends AbstractController
 {
     /**
      * Fonction permettant de créer une adresse 
      * 
-     * @Route ("/api/user/address/{id}", name="api_address_create", methods={"GET","POST"})
+     * @Route ("/api/secure/user/address/{id}", name="api_address_create", methods={"GET","POST"})
      */
-    public function createAdress( Request $request, EntityManagerInterface $em, ValidatorInterface $validator, ManagerRegistry $doctrine, int $id)
+    public function createAddress( Request $request, EntityManagerInterface $em, ValidatorInterface $validator, ManagerRegistry $doctrine, SerializerInterface $serializer, User $user)
     {
-        $em = $doctrine->getManager();
-        $user = $em->getRepository(User::class)->find($id); 
-        $address = new Address(); 
-        $address->setStreet('rue olivier de clisson'); 
-        $address->setPostcode('56890'); 
-        $address->setCity('Vannes'); 
-        $address->setUser($user);
+        // Récupérer le contenu JSON
+        $jsonContent = $request->getContent();
+        //dd($jsonContent);
+        try {
+            // Désérialiser (convertir) le JSON en entité Doctrine Patient
+            $newAddress = $serializer->deserialize($jsonContent, Address::class, 'json');
+            
+        } catch (NotEncodableValueException $e) {
+            // Si le JSON fourni est "malformé" ou manquant, on prévient le client
+            return $this->json(
+                ['error' => 'JSON invalide'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+        
+        $newAddress->setUser($user); 
+         // Valider l'entité
+        $errors = $validator->validate($newAddress);
 
-                
-        $em->persist($address);
+        // Y'a-t-il des erreurs ?
+        if (count($errors) > 0) {
+            // @todo Retourner des erreurs de validation propres
+            return $this->json($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        
+        // On sauvegarde l'entité
+        $em = $doctrine->getManager();
+        $em->persist($newAddress);
         $em->flush();
-        return new JsonResponse([
-            'success_message' => 'Adresse bien enregistrée'
+        //return new JsonResponse([
+        //    'success_message' => 'Thank you for registering'
+        //]);
+        return $this->json($newAddress, 201, [], 
+        [
+            'groups' => 'get_collection'
         ]);
     }
     
     /**
      * Fonction permettant d'afficher une adresse 
      * 
-     * @Route("/api/address/{id}", name="api_address", methods={"GET"})
+     * @Route("/api/secure/address/{id}", name="api_address", methods={"GET"})
      */
     public function getAddress(Address $address = null): Response
     {
@@ -57,7 +82,7 @@ class AddressController extends AbstractController
     
     /**
      * Fonction permettant de supprimer une adresse 
-     * @Route ("/api/address/{id}", name="api_address_delete", methods={"POST", "DELETE"})
+     * @Route ("/api/secure/address/{id}", name="api_address_delete", methods={"POST", "DELETE"})
      */
     public function deleteAddress(ManagerRegistry $doctrine, int $id) : Response
     {
@@ -81,26 +106,27 @@ class AddressController extends AbstractController
     /**
      * Fonction permettant de modifier les infos d'une adresse 
      * 
-     * @Route ("/api/address/{id}", name="api_address_edit", methods={"PUT"})
+     * @Route ("/api/secure/address/{id}", name="api_address_edit", methods={"PUT"})
      */
-    public function editAddress(ManagerRegistry $doctrine, int $id): Response
+    public function editAddress( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id): Response
     {
-        $em = $doctrine->getManager();
-        $address = $em->getRepository(Address::class)->find($id);
+        $entityManager = $doctrine->getManager();
         
-        if (!$address) {
-            throw $this->createNotFoundException(
-                'No user found for id '.$id
-            );
-        }
-        $address->setStreet('rue Jean Jaurès'); 
-        $address->setPostcode('56890'); 
-        $address->setCity('Vannes'); 
+        $address = $entityManager->getRepository(Address::class)->find($id);
         
-        $em->flush();
+        
+        // dd($patient); 
+        $content = $request->getContent(); // Get json from request
+        
+        $updatePatient = $serializer->deserialize($content, Address::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $address]);
+        
+        
+       
+        
+        $entityManager->flush();
 
         return new JsonResponse([
-            'success_message' => 'Adresse mise à jour'
+            'success_message' => 'Profil patient mis à jour.'
         ]);
     }
 }
