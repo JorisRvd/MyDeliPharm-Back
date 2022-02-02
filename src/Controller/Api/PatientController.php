@@ -2,9 +2,10 @@
 
 namespace App\Controller\Api;
 
-
+use App\Entity\Order;
 use App\Entity\Patient;
 use App\Entity\User;
+use App\Repository\OrderRepository;
 use App\Repository\PatientRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,7 +27,7 @@ class PatientController extends AbstractController
     /**
      * Fonction permettant de créer un profil patient 
      * 
-     * @Route ("/api/user/patient", name="api_patient_create", methods={"GET","POST"})
+     * @Route ("clear", name="api_patient_create", methods={"GET","POST"})
      */
     public function createPatient( Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
     {
@@ -51,6 +52,8 @@ class PatientController extends AbstractController
          $hashedPassword = $userPasswordHasher->hashPassword($newPatient->getUser(),$newPatient->getUser()->getPassword());
          // On écrase le mot de passe en clair par le mot de passe haché
          $newPatient->getUser()->setPassword($hashedPassword);
+         
+         $newPatient->getUser()->setRoles(["ROLE_PATIENT"]); 
 
          // Valider l'entité
         $errors = $validator->validate($newPatient);
@@ -120,5 +123,4 @@ class PatientController extends AbstractController
     
     }
           
-
 }

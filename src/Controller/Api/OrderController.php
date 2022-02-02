@@ -5,12 +5,14 @@ namespace App\Controller\Api;
 use App\Entity\Order;
 use App\Entity\Patient;
 use App\Repository\OrderRepository;
+use App\Service\FileUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -97,7 +99,7 @@ class OrderController extends AbstractController
      * @Route ("/api/secure/order/new/{id}/image", name="api_order_create_image", methods={"GET","POST"})
      * 
      */
-    public function createImages(Request $request, ValidatorInterface $validator, Order $order, ManagerRegistry $doctrine) : Response
+    public function createImages(Request $request, ValidatorInterface $validator, Order $order, ManagerRegistry $doctrine, FileUploader $fileUploader) : Response
     {
          // On passe directement par l'objet Request pour récupérer l'image
          $prescriptionImage = $request->files->get('prescriptionImage');
@@ -119,13 +121,18 @@ class OrderController extends AbstractController
  
          $destination = $this->getParameter('kernel.project_dir').'/public/uploads/images/order';
          
-         $order->setPrescriptionImage($destination); 
+         $imageFileName = $fileUploader->upload($prescriptionImage);
+
+         $order->setprescriptionImage($imageFileName);
+        
+        
+         
+         $prescriptionImage->move($destination,$imageFileName);
 
          $em = $doctrine->getManager();
          
          $em->flush();
 
-         $prescriptionImage->move($destination);
          
          return new JsonResponse([
             'success_message' => 'Image upload'

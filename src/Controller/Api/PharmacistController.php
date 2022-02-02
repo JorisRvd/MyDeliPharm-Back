@@ -50,6 +50,8 @@ class PharmacistController extends AbstractController
         // On écrase le mot de passe en clair par le mot de passe haché
         $newPharmacist->getUser()->setPassword($hashedPassword);
 
+        $newPharmacist->getUser()->setRoles(["ROLE_PHARMACIST"]); 
+        
         // Valider l'entité
        $errors = $validator->validate($newPharmacist);
 

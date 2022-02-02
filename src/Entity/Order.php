@@ -24,29 +24,38 @@ class Order
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
+     * @Groups({"get_driver"})
+     * @Groups({"get_patient"})
+     * 
      */
     private $id;
 
     /**
-     * @Vich\UploadableField(mapping="order_image", fileNameProperty="prescriptionImage")
+     * 
+     * @Groups({"get_driver"})
+     * @Groups({"get_patient"})
      * 
      */
     private $prescription;
     
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     *  @ORM\Column(type="string", length=255, nullable=true)
+     *  @Groups({"get_driver"})
+     *  @Groups({"get_patient"})
      */
     private $prescriptionImage;
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
      * @Assert\NotBlank
+     * @Groups({"get_driver"})
      */
     private $safetyCode;
 
     /**
      * @ORM\Column(type="smallint")
      * @Groups({"get_order"})
+     * @Groups({"get_patient"})
      * @Assert\NotBlank
      */
     private $status;
@@ -54,16 +63,17 @@ class Order
     /**
      * @ORM\ManyToOne(targetEntity=Patient::class, inversedBy="orders", cascade={"persist", "remove"})
      * @Groups({"get_order"})
+     * 
      */
     private $patient;
 
     /**
-     * @ORM\OneToOne(targetEntity=Driver::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Driver::class, inversedBy="orders", cascade={"persist", "remove"})
      */
     private $driver;
 
     /**
-     * @ORM\OneToOne(targetEntity=Pharmacist::class, inversedBy="orders", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=Pharmacist::class, inversedBy="orders", cascade={"persist", "remove"})
      */
     private $pharmacist;
 

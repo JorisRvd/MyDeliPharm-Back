@@ -54,7 +54,7 @@ class Pharmacist
     private $user;
 
     /**
-     * @ORM\OneToOne(targetEntity=Order::class, mappedBy="pharmacist", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="pharmacist", cascade={"persist", "remove"})
      * @Groups({"get_pharmacist"})
      */
     private $orders;

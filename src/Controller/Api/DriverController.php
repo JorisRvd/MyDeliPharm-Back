@@ -48,6 +48,8 @@ class DriverController extends AbstractController
         // On écrase le mot de passe en clair par le mot de passe haché
         $newDriver->getUser()->setPassword($hashedPassword);
 
+        $newDriver->getUser()->setRoles(["ROLE_DRIVER"]); 
+
         // Valider l'entité
         $errors = $validator->validate($newDriver);
 
