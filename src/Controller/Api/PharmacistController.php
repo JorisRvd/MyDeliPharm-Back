@@ -96,14 +96,11 @@ class PharmacistController extends AbstractController
      * 
      * @Route ("/api/secure/user/pharmacist/{id}", name="api_pharmacist_edit", methods={"PUT"})
      */
-    public function edit( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, Pharmacist $pharmacist): Response
+    public function edit( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id): Response
     {
         $entityManager = $doctrine->getManager();
-        
         $pharmacist = $entityManager->getRepository(Pharmacist::class)->find($id);
-        
-        
-        // dd($patient);
+         
         $content = $request->getContent(); // Get json from request
         
         $updatePharmacist = $serializer->deserialize($content, Pharmacist::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $pharmacist]);

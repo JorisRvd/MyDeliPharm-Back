@@ -42,8 +42,8 @@ class Order
     
     /**
      *  @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"get_collection"})
-     * @Groups({"get_order"})
+     *  @Groups({"get_collection"})
+     *  @Groups({"get_order"})
      *  @Groups({"get_driver"})
      *  @Groups({"get_patient"})
      */

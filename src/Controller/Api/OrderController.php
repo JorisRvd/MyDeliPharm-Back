@@ -65,7 +65,7 @@ class OrderController extends AbstractController
         
 
         
-        $newOrder->setSafetyCode(0000);
+        $newOrder->setSafetyCode(1234);
         $newOrder->setPatient($patient);
 
          // Valider l'entité

@@ -8,12 +8,14 @@ use App\Entity\User;
 use App\Repository\OrderRepository;
 use App\Repository\PatientRepository;
 use App\Repository\UserRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -84,20 +86,16 @@ class PatientController extends AbstractController
      * @Route("/api/secure/user/patient/{id}", name="api_patient_edit", methods={"PUT"})
      * 
      */
-    public function editPatient( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, Patient $patient, int $id): Response
+    public function editPatient( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id): Response
     {
         $entityManager = $doctrine->getManager();
-        
         $patient = $entityManager->getRepository(Patient::class)->find($id);
         
         
-        // dd($patient); 
         $content = $request->getContent(); // Get json from request
         
         $updatePatient = $serializer->deserialize($content, Patient::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $patient]);
         
-        
-       
         
         $entityManager->flush();
 
@@ -121,6 +119,96 @@ class PatientController extends AbstractController
             'groups' => 'get_patient'
         ]);
     
+    }
+    /**
+     * Create vitalcard file 
+     * 
+     * @Route ("/api/secure/patient/new/{id}/vital", name="api_patient_create_vital", methods={"GET","POST"})
+     * 
+     */
+    public function createVitalfile(Request $request, ValidatorInterface $validator, Patient $patient, ManagerRegistry $doctrine, FileUploader $fileUploader) : Response
+    {
+         // On passe directement par l'objet Request pour récupérer l'image
+         $vitalCard = $request->files->get('vitalCardFile');
+
+         // Exception Erreur 400 si image non présente
+         if (!$vitalCard) {
+             throw new BadRequestHttpException('"vitalCardFile" is required');
+         }
+ 
+         // Optionnel (recommandé) : Validation du fichier
+         $errors = $validator->validate($vitalCard, [
+             // Contrainte image
+   
+         ]);
+ 
+         if (count($errors) > 0) {
+             return $this->json($errors, Response::HTTP_BAD_REQUEST);
+         }
+ 
+         $destination = $this->getParameter('kernel.project_dir').'/public/uploads/images/patient/vitalcard';
+         
+         $imageFileName = $fileUploader->upload($vitalCard);
+
+         $patient->setVitalCardFile($imageFileName);
+        
+        
+         
+         $vitalCard->move($destination,$imageFileName);
+
+         $em = $doctrine->getManager();
+         
+         $em->flush();
+
+         
+         return new JsonResponse([
+            'success_message' => 'Vitalcard upload'
+          ]);
+    }
+    /**
+     * Create vitalcard file 
+     * 
+     * @Route ("/api/secure/patient/new/{id}/mutuelle", name="api_patient_create_mutuelle", methods={"GET","POST"})
+     * 
+     */
+    public function createMutuelleFile(Request $request, ValidatorInterface $validator, Patient $patient, ManagerRegistry $doctrine, FileUploader $fileUploader) : Response
+    {
+         // On passe directement par l'objet Request pour récupérer l'image
+         $mutuelleCard = $request->files->get('mutuelleFile');
+
+         // Exception Erreur 400 si image non présente
+         if (!$mutuelleCard) {
+             throw new BadRequestHttpException('"mutuelleFile" is required');
+         }
+ 
+         // Optionnel (recommandé) : Validation du fichier
+         $errors = $validator->validate($mutuelleCard, [
+             // Contrainte image
+   
+         ]);
+ 
+         if (count($errors) > 0) {
+             return $this->json($errors, Response::HTTP_BAD_REQUEST);
+         }
+ 
+         $destination = $this->getParameter('kernel.project_dir').'/public/uploads/images/patient/mutuellecard';
+         
+         $imageFileName = $fileUploader->upload($mutuelleCard);
+
+         $patient->setMutuelleFile($imageFileName);
+        
+        
+         
+         $mutuelleCard->move($destination,$imageFileName);
+
+         $em = $doctrine->getManager();
+         
+         $em->flush();
+
+         
+         return new JsonResponse([
+            'success_message' => 'mutuelleCard upload'
+          ]);
     }
           
 }

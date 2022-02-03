@@ -76,25 +76,20 @@ class UserController  extends AbstractController
      * 
      * @Route ("/api/secure/user/{id}", name="api_user_edit", methods={"PUT"})
      */
-    public function edit(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, UserPasswordHasherInterface $userPasswordHasher): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, UserPasswordHasherInterface $userPasswordHasher, ManagerRegistry $doctrine, int $id): Response
     {
         $entityManager = $doctrine->getManager();
-        
         $user = $entityManager->getRepository(User::class)->find($id);
         
         
-        // dd($patient); 
+         //dd($user); 
         $content = $request->getContent(); // Get json from request
         
         $updateUser = $serializer->deserialize($content, User::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $user]);
-        
-        $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword() );
-        
+        //dd($updateUser);
+        //$hashedPassword = $userPasswordHasher->hashPassword($updateUser, $updateUser->getPassword() );
         // On écrase le mot de passe en clair par le mot de passe haché
-        $user->setPassword($hashedPassword);
-        
-       
-        
+        //$updateUser->setPassword($hashedPassword); 
         $entityManager->flush();
 
         return new JsonResponse([
