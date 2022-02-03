@@ -37,7 +37,7 @@ class Pharmacist
      * @ORM\Column(type="smallint", nullable=true)
      * @Groups({"get_collection"},{"get_pharmacist"})
      * @Groups({"get_order"})
-     * @Assert\NotBlank
+     * 
      * 
      */
     private $status;
@@ -46,7 +46,7 @@ class Pharmacist
      * @ORM\Column(type="string", length=2048, nullable=true)
      * @Groups({"get_order"})
      * @Groups({"get_pharmacist"})
-     * @Assert\Url
+     * 
      */
     private $profilPic;
 
