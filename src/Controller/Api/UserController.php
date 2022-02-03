@@ -26,69 +26,28 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UserController  extends AbstractController
 {
-
-    /**
-     * Fonction permettant de créer un user
-     * 
-     * @Route ("/api/user/", name="api_create_user", methods={"GET", "POST"})
-     */
-    public function createUser(Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $userPasswordHasher)
-    {
-        // Récupérer le contenu JSON
-        $jsonContent = $request->getContent();
-         
-        try {
-            // Désérialiser (convertir) le JSON en entité Doctrine User
-            $newUser = $serializer->deserialize($jsonContent, User::class, 'json');
-        } catch (NotEncodableValueException $e) {
-            // Si le JSON fourni est "malformé" ou manquant, on prévient le client
-            return $this->json(
-                ['error' => 'JSON invalide'],
-                Response::HTTP_UNPROCESSABLE_ENTITY
-            );
-        }
-        
-        //hash password
-        $hashedPassword = $userPasswordHasher->hashPassword($newUser, $newUser->getPassword() );
-        
-        // On écrase le mot de passe en clair par le mot de passe haché
-        $newUser->setPassword($hashedPassword);
-
-            // Valider l'entité
-        $errors = $validator->validate($newUser);
-
-        // Y'a-t-il des erreurs ?
-        if (count($errors) > 0) {
-            // @todo Retourner des erreurs de validation propres
-            return $this->json($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        
-        // On sauvegarde l'entité
-        $em = $doctrine->getManager();
-        $em->persist($newUser);
-        $em->flush();
-        return new JsonResponse([
-            'success_message' => 'Thank you for registering'
-        ]);
-}
-
-    /**
-     * Fonction permettant d'afficher un utilisateur
-     * 
-     * @Route("/api/secure/user/{id}", name="api_user", methods={"GET"})
-     */
-    public function getUserProfil(User $user = null): Response
-    {
-        if ($user === null) {
-            return $this->json(['error' => 'Utilisateur non trouvé.'], 404);
-        }
-        return $this->json($user, 200, [], 
-        [
-            'groups' => 'get_collection', 'get_driver', 'get_patient', 'get_pharmacist', 'get_order'
-        ]);
     
+    /**
+     * Get the profil of the user authenticated 
+     * 
+     * @Route("/api/secure/profil", name="api_user_profil", methods={"GET"})
+     */
+    public function getProfil(): Response
+    {
+        $user = $this->getUser();
+        
+        return $this->json(
+            // Data to serialized
+            $user,
+            // Status code
+            200,
+            // Headers
+            [],
+            // Groups used for the serializer
+            ['groups' => 'get_collection']
+        );
     }
+    
     /**
      * Fonction permettant de supprimer un utilisateur
      * @Route ("/api/secure/user/{id}", name="api_user_delete", methods={"POST", "DELETE"})
@@ -111,6 +70,7 @@ class UserController  extends AbstractController
             'success_message' => 'Profil supprimé.'
         ]);
     }
+
     /**
      * Fonction permettant de modifier les infos d'un patient 
      * 
@@ -141,27 +101,5 @@ class UserController  extends AbstractController
             'success_message' => 'Profil user mis à jour.'
         ]);
     }
-
-    /**
-     * Get the profil of the user authenticated 
-     * 
-     * @Route("/api/secure/profil", name="api_user_profil", methods={"GET"})
-     */
-    public function getProfil(): Response
-    {
-        $user = $this->getUser();
-        
-        return $this->json(
-            // Data to serialized
-            $user,
-            // Status code
-            200,
-            // Headers
-            [],
-            // Groups used for the serializer
-            ['groups' => 'get_collection']
-        );
-    }
-
-    
+   
 }

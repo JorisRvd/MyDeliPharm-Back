@@ -41,7 +41,7 @@ class Patient
 
     /**
      * @ORM\Column(type="integer", nullable=true)
-     * @Groups({"get_collection"}, {"get_patient"})
+     * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_patient"})
      */
@@ -51,7 +51,8 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
-     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      * @Groups({"get_patient"})
      */
     private $vitalCardNumber;
@@ -60,19 +61,22 @@ class Patient
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
-     * @Groups({"get_collection"}, {"get_order"}, {"get_patient"})
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      * @Groups({"get_patient"})
      */
     private $mutuelleNumber;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"get_order"})
      */
     private $other;
 
     /**
      * @ORM\Column(type="smallint", nullable=true)
-     * @Groups({"get_collection"}, {"get_order"})
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      */
     private $status;
 
@@ -100,7 +104,7 @@ class Patient
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="patient", orphanRemoval=true)
      * @ORM\JoinColumn(nullable=true)
-     * @Groups({"get_patient"})
+     * @Groups({"get_collection"})
      * 
      */
     private $orders;
@@ -242,7 +246,7 @@ class Patient
         return $this->orders;
     }
 
-    public function addPatient(Order $order): self
+    public function addOrders(Order $order): self
     {
         if (!$this->orders->contains($order)) {
             $this->orders[] = $order;
@@ -252,7 +256,7 @@ class Patient
         return $this;
     }
 
-    public function removeOrder(Order $order): self
+    public function removeOrders(Order $order): self
     {
         if ($this->orders->removeElement($order)) {
             // set the owning side to null (unless already changed)

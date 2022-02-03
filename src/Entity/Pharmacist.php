@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\PharmacistRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,49 +19,56 @@ class Pharmacist
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get_order"})
      * 
      */
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"get_collection"},{"get_pharmacist"})
-     * 
+     * @Groups({"get_order"})
      * 
      * 
      */
     private $rppsNumber;
 
     /**
-     * @ORM\Column(type="smallint")
+     * @ORM\Column(type="smallint", nullable=true)
      * @Groups({"get_collection"},{"get_pharmacist"})
-     * @Assert\NotBlank
+     * @Groups({"get_order"})
+     * 
      * 
      */
     private $status;
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_order"})
      * @Groups({"get_pharmacist"})
-     * @Assert\Url
+     * 
      */
     private $profilPic;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="pharmacist", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"get_order"})
      * 
      */
     private $user;
 
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="pharmacist", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_collection"})
      */
     private $orders;
 
     /**
      * @ORM\ManyToOne(targetEntity=Dispensary::class, inversedBy="pharmacist",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
      * @Groups({"get_pharmacist"})
      */
     private $dispensary;
@@ -127,24 +135,32 @@ class Pharmacist
         return $this;
     }
 
-    public function getOrders(): ?Order
+    /**
+     * @return Collection|Order[]
+     */
+    public function getOrders(): Collection
     {
         return $this->orders;
     }
 
-    public function setOrders(?Order $orders): self
+    public function addOrders(Order $order): self
     {
-        // unset the owning side of the relation if necessary
-        if ($orders === null && $this->orders !== null) {
-            $this->orders->setPharmacist(null);
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setPharmacist($this);
         }
 
-        // set the owning side of the relation if necessary
-        if ($orders !== null && $orders->getPharmacist() !== $this) {
-            $orders->setPharmacist($this);
-        }
+        return $this;
+    }
 
-        $this->orders = $orders;
+    public function removeOrders(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getPharmacist() === $this) {
+                $order->setPharmacist(null);
+            }
+        }
 
         return $this;
     }
