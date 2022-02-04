@@ -40,7 +40,7 @@ class Patient
     private $weight;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", length=11, nullable=true)
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_patient"})
@@ -48,7 +48,7 @@ class Patient
     private $age;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="bigint", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
      * @Groups({"get_collection"})
@@ -58,9 +58,8 @@ class Patient
     private $vitalCardNumber;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="bigint", nullable=true)
      * @Assert\Unique
-     * @Assert\Positive
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_patient"})
@@ -83,14 +82,14 @@ class Patient
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
      * @Groups({"get_order"})
-     * @Assert\Url
+     * 
      */
     private $vitalCardFile;
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
      * @Groups({"get_order"})
-     * @Assert\Url
+     * 
      */
     private $mutuelleFile;
 

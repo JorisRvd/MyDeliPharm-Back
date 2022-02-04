@@ -18,12 +18,13 @@ class Dispensary
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups({"get_collection"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="smallint")
-     * @Assert\NotBlank
+     * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      * 
      */
@@ -31,13 +32,14 @@ class Dispensary
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      */
     private $other;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
+     * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      * 
      */

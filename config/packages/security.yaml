@@ -40,7 +40,7 @@ security:
                     - lexik_jwt_authentication.jwt_token_authenticator
 
         api_public:
-            pattern: ^/api/user/(patient|pharmacist)/
+            pattern: ^/api/user/(patient|pharmacist|driver)/
             stateless: true
             
 
@@ -54,7 +54,22 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/user/patient/, roles: PUBLIC_ACCESS }
-        - { path: ^/api/user/, roles: PUBLIC_ACCESS }
+        - { path: ^/api/user/pharmacist/, roles: PUBLIC_ACCESS }
+        - { path: ^/api/user/driver, roles: PUBLIC_ACCESS }
+        - { path: ^/api/secure/user/patient/\d+$, roles: ROLE_PATIENT, methods: [PUT] }
+        - { path: ^/api/secure/patient/new/\d+$/vital, roles: ROLE_PATIENT }
+        - { path: ^/api/secure/patient/new/\d+$/mutuelle, roles: ROLE_PATIENT }
+        - { path: ^/api/secure/user/pharmacist/\d+$, roles: ROLE_PHARMACIST, methods: [PUT]}
+        - { path: ^/api/secure/user/driver/\d+$, roles: ROLE_DRIVER, methods: [PUT]}
+        - { path: ^/api/secure/order/new/\d+$, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/secure/order/new/\d+$/image, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/secure/order/\d+$, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/address/dispensary/\d+$, roles: ROLE_PHARMACIST}
+        - { path: ^/api/secure/address/dispensary/\d+$, roles: ROLE_PHARMACIST}
+        - { path: ^/api/secure/dispensary/\d+$, roles: ROLE_PHARMACIST}
+        - { path: ^/api/secure/user/address/\d+$, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/secure/profil, roles: IS_AUTHENTICATED_FULLY}
+        - { path: ^/api/secure/user/\d+$, roles: IS_AUTHENTICATED_FULLY}
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }

@@ -54,12 +54,14 @@ class Driver
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="driver", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      * 
+     * 
      */
     private $user;
 
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="driver", cascade={"persist", "remove"})
-     * @Groups({"get_driver"})
+     * @Groups({"get_collection"})
+     * 
      */
     private $orders;
 

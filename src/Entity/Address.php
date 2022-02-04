@@ -56,8 +56,27 @@ class Address
 
     /**
      * @ORM\OneToOne(targetEntity=Dispensary::class, mappedBy="address", cascade={"persist", "remove"})
+     * @Groups({"get_collection"})
      */
     private $dispensary;
+
+    /**
+     * @ORM\Column(type="bigint", nullable=true)
+     * @Groups({"get_collection"})
+     */
+    private $osmId;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"get_collection"})
+     */
+    private $lat;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"get_collection"})
+     */
+    private $lon;
 
     public function getId(): ?int
     {
@@ -125,6 +144,42 @@ class Address
         }
 
         $this->dispensary = $dispensary;
+
+        return $this;
+    }
+
+    public function getOsmId(): ?int
+    {
+        return $this->osmId;
+    }
+
+    public function setOsmId(?int $osmId): self
+    {
+        $this->osmId = $osmId;
+
+        return $this;
+    }
+
+    public function getLat(): ?string
+    {
+        return $this->lat;
+    }
+
+    public function setLat(?string $lat): self
+    {
+        $this->lat = $lat;
+
+        return $this;
+    }
+
+    public function getLon(): ?string
+    {
+        return $this->lon;
+    }
+
+    public function setLon(?string $lon): self
+    {
+        $this->lon = $lon;
 
         return $this;
     }
