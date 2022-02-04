@@ -81,6 +81,7 @@ class Patient
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * 
      */
@@ -88,6 +89,7 @@ class Patient
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * 
      */
