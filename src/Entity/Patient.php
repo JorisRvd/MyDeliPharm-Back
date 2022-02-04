@@ -82,12 +82,14 @@ class Patient
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_order"})
      * @Assert\Url
      */
     private $vitalCardFile;
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_order"})
      * @Assert\Url
      */
     private $mutuelleFile;
