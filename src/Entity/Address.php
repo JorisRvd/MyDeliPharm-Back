@@ -19,21 +19,26 @@ class Address
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
+     * @Groups({"get_address"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"get_address"},{"get_pharmacist"})
+     * @Groups({"get_pharmacist"})
+     * @Groups({"get_address"})
      * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      * @Assert\NotBlank
      */
     private $street;
 
     /**
      * @ORM\Column(type="string", length=5)
-     * @Groups({"get_address"},{"get_pharmacist"})
+     * @Groups({"get_pharmacist"})
+     * @Groups({"get_address"})
      * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      * @Assert\NotBlank
      *
      */
@@ -41,8 +46,10 @@ class Address
 
     /**
      * @ORM\Column(type="string", length=50)
-     * @Groups({"get_address"},{"get_pharmacist"})
+     * @Groups({"get_pharmacist"})
+     * @Groups({"get_address"})
      * @Groups({"get_collection"})
+     * @Groups({"get_order"})
      * @Assert\NotBlank
      */
     private $city;
@@ -57,24 +64,31 @@ class Address
     /**
      * @ORM\OneToOne(targetEntity=Dispensary::class, mappedBy="address", cascade={"persist", "remove"})
      * @Groups({"get_collection"})
+     * @Groups({"get_address"})
      */
     private $dispensary;
 
     /**
      * @ORM\Column(type="bigint", nullable=true)
      * @Groups({"get_collection"})
+     * @Groups({"get_address"})
+     * @Groups({"get_order"})
      */
     private $osmId;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"get_collection"})
+     * @Groups({"get_address"})
+     * @Groups({"get_order"})
      */
     private $lat;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"get_collection"})
+     * @Groups({"get_address"})
+     * @Groups({"get_order"})
      */
     private $lon;
 

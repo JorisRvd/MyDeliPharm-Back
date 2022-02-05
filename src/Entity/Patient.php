@@ -40,7 +40,7 @@ class Patient
     private $weight;
 
     /**
-     * @ORM\Column(type="string", length=11, nullable=true)
+     * @ORM\Column(type="string", length=24, nullable=true)
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_patient"})

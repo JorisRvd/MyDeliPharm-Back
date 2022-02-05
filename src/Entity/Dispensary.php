@@ -19,6 +19,7 @@ class Dispensary
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
+     * @Groups({"get_address"})
      */
     private $id;
 
@@ -26,6 +27,7 @@ class Dispensary
      * @ORM\Column(type="smallint")
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_address"})
      * 
      */
     private $status;
@@ -34,6 +36,7 @@ class Dispensary
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_address"})
      */
     private $other;
 
@@ -41,6 +44,7 @@ class Dispensary
      * @ORM\Column(type="string", length=255)
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_address"})
      * 
      */
     private $openingHours;
@@ -64,6 +68,7 @@ class Dispensary
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Groups({"get_address"})
      */
     private $name;
 

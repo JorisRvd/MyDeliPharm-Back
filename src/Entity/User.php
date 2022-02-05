@@ -91,6 +91,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=Address::class, mappedBy="user", orphanRemoval=true)
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_order"})
      * 
      */
     private $address;
