@@ -20,6 +20,8 @@ class Pharmacist
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     * @Groups ({"get_collection"})
      * 
      */
     private $id;
@@ -28,6 +30,7 @@ class Pharmacist
      * @ORM\Column(type="integer", nullable=true)
      * @Groups({"get_collection"},{"get_pharmacist"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      * 
      * 
      */
@@ -37,23 +40,17 @@ class Pharmacist
      * @ORM\Column(type="smallint", nullable=true)
      * @Groups({"get_collection"},{"get_pharmacist"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      * 
      * 
      */
     private $status;
 
     /**
-     * @ORM\Column(type="string", length=2048, nullable=true)
-     * @Groups({"get_order"})
-     * @Groups({"get_pharmacist"})
-     * 
-     */
-    private $profilPic;
-
-    /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="pharmacist", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      * 
      */
     private $user;
@@ -70,6 +67,7 @@ class Pharmacist
      * @ORM\ManyToOne(targetEntity=Dispensary::class, inversedBy="pharmacist",cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_pharmacists"})
      */
     private $dispensary;
 
@@ -107,18 +105,6 @@ class Pharmacist
     public function setStatus(int $status): self
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getProfilPic(): ?string
-    {
-        return $this->profilPic;
-    }
-
-    public function setProfilPic(?string $profilPic): self
-    {
-        $this->profilPic = $profilPic;
 
         return $this;
     }

@@ -20,6 +20,8 @@ class Dispensary
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
      * @Groups({"get_address"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $id;
 
@@ -28,6 +30,8 @@ class Dispensary
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      * @Groups({"get_address"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      * 
      */
     private $status;
@@ -37,6 +41,8 @@ class Dispensary
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      * @Groups({"get_address"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $other;
 
@@ -45,6 +51,8 @@ class Dispensary
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      * @Groups({"get_address"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      * 
      */
     private $openingHours;
@@ -53,6 +61,8 @@ class Dispensary
      * @ORM\OneToOne(targetEntity=Address::class, inversedBy="dispensary", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_pharmacists"})
+     * 
      */
     private $address;
 
@@ -69,6 +79,8 @@ class Dispensary
     /**
      * @ORM\Column(type="string", length=100)
      * @Groups({"get_address"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $name;
 

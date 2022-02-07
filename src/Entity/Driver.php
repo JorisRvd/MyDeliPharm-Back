@@ -19,6 +19,7 @@ class Driver
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"get_collection"})
      */
     private $id;
 
@@ -42,13 +43,6 @@ class Driver
      * @Groups({"get_collection"},{"get_driver"})
      */
     private $status;
-
-    /**
-     * @ORM\Column(type="string", length=2048)
-     * @Groups({"get_driver"})
-     * 
-     */
-    private $profilPic;
 
     /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="driver", cascade={"persist", "remove"})
@@ -107,18 +101,6 @@ class Driver
     public function setStatus(int $status): self
     {
         $this->status = $status;
-
-        return $this;
-    }
-
-    public function getProfilPic(): ?string
-    {
-        return $this->profilPic;
-    }
-
-    public function setProfilPic(string $profilPic): self
-    {
-        $this->profilPic = $profilPic;
 
         return $this;
     }

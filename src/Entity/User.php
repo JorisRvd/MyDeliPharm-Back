@@ -24,6 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $id;
 
@@ -31,6 +32,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="smallint", nullable=true)
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $gender;
 
@@ -39,6 +41,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
      * @Assert\NotBlank
+     * @Groups({"get_pharmacists"})
      * 
      * 
      */
@@ -62,6 +65,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $firstname;
 
@@ -70,13 +74,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=15)
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
-     *  @Groups({"get_order"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      */
     private $phoneNumber;
 
@@ -113,6 +119,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"})
      */
     private $pharmacist;
+
+    /**
+     * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     */
+    private $profilPic;
 
     
 
@@ -341,6 +355,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->pharmacist = $pharmacist;
+
+        return $this;
+    }
+
+    public function getProfilPic(): ?string
+    {
+        return $this->profilPic;
+    }
+
+    public function setProfilPic(?string $profilPic): self
+    {
+        $this->profilPic = $profilPic;
 
         return $this;
     }

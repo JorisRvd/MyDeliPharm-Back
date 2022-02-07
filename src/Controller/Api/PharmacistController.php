@@ -2,9 +2,7 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Patient;
 use App\Entity\Pharmacist;
-use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
@@ -113,6 +111,23 @@ class PharmacistController extends AbstractController
         return new JsonResponse([
             'success_message' => 'Profil pharmacien mis à jour.'
         ]);
+    }
+
+     /**
+     * Get profil pharmacist
+     * 
+     * @Route("/api/secure/user/pharmacists", name="api_pharmacists", methods={"GET"})
+     */
+    public function getAllPharmacist(ManagerRegistry $doctrine): Response
+    {
+        $repository = $doctrine->getRepository(Pharmacist::class);
+        $pharmacists = $repository->findAll();
+    
+        return $this->json($pharmacists, 200, [], 
+        [
+            'groups' => 'get_pharmacists'
+        ]);
+        
     }
 
 

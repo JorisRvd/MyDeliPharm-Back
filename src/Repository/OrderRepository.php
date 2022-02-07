@@ -19,6 +19,23 @@ class OrderRepository extends ServiceEntityRepository
         parent::__construct($registry, Order::class);
     }
 
+    public function findOrdersByCity()
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT o
+            FROM App\Entity\Order o
+            WHERE o.location = (
+                SELECT d.location
+                FROM App\Entity\Driver d
+            )'
+        );
+
+        // returns an array of Movie objects
+        return $query->getResult();
+    }
+
     // /**
     //  * @return Order[] Returns an array of Order objects
     //  */

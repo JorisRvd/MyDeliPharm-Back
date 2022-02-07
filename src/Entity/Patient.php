@@ -118,6 +118,14 @@ class Patient
      */
     private $dispensary;
 
+    /**
+     * @ORM\Column(type="string", length=24, nullable=true)
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
+     * @Groups({"get_patient"})
+     */
+    private $validityMutuelle;
+
     public function __construct()
     {
         $this->user = new User(); 
@@ -279,6 +287,18 @@ class Patient
     public function setDispensary(?Dispensary $dispensary): self
     {
         $this->dispensary = $dispensary;
+
+        return $this;
+    }
+
+    public function getValidityMutuelle(): ?string
+    {
+        return $this->validityMutuelle;
+    }
+
+    public function setValidityMutuelle(?string $validityMutuelle): self
+    {
+        $this->validityMutuelle = $validityMutuelle;
 
         return $this;
     }

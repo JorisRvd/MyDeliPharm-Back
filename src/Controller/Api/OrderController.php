@@ -4,8 +4,8 @@ namespace App\Controller\Api;
 
 use App\Entity\Order;
 use App\Entity\Patient;
-use App\Service\FileUploader;
 use App\Repository\OrderRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -164,6 +163,26 @@ class OrderController extends AbstractController
 
         return new JsonResponse([
             'success_message' => 'commande mis à jour.'
+        ]);
+    }
+
+
+    /**
+     * Get order by city
+     * 
+     * @Route("/api/secure/order", name="api_order_city", methods={"GET"})
+     */
+    public function getOrderByCity(OrderRepository $orderRepository): Response
+    {
+
+        $orders = $orderRepository->findOrdersByCity();
+        
+       
+
+
+        return $this->json($orders, 200, [], 
+        [
+            'groups' => 'get_order'
         ]);
     }
 
