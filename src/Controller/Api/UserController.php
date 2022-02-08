@@ -4,24 +4,21 @@ namespace App\Controller\Api;
 
 
 use App\Entity\User;
-use App\Form\UserType;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManager;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
-use Symfony\Component\Serializer\Encoder\JsonDecode;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 
 
 class UserController  extends AbstractController
@@ -76,30 +73,61 @@ class UserController  extends AbstractController
      * 
      * @Route ("/api/secure/user/{id}", name="api_user_edit", methods={"PUT"})
      */
-    public function edit(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, UserPasswordHasherInterface $userPasswordHasher): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, UserPasswordHasherInterface $userPasswordHasher, ManagerRegistry $doctrine, int $id): Response
     {
         $entityManager = $doctrine->getManager();
-        
         $user = $entityManager->getRepository(User::class)->find($id);
         
         
-        // dd($patient); 
+         //dd($user); 
         $content = $request->getContent(); // Get json from request
         
         $updateUser = $serializer->deserialize($content, User::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $user]);
-        
-        $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword() );
-        
+        //dd($updateUser);
+        //$hashedPassword = $userPasswordHasher->hashPassword($updateUser, $updateUser->getPassword() );
         // On écrase le mot de passe en clair par le mot de passe haché
-        $user->setPassword($hashedPassword);
-        
-       
-        
+        //$updateUser->setPassword($hashedPassword); 
         $entityManager->flush();
 
         return new JsonResponse([
             'success_message' => 'Profil user mis à jour.'
         ]);
     }
-   
+
+
+    /**
+     * Create profilpic file 
+     * 
+     * @Route ("/api/secure/user/new/{id}/pic", name="api_user_create_pic", methods={"GET","POST"})
+     * 
+     */
+    public function createProfilPicFile(Request $request, ValidatorInterface $validator, User $user, ManagerRegistry $doctrine, FileUploader $fileUploader)
+    {
+        $profilPic = $request->files->get('profilPic');
+
+        if (!$profilPic) {
+            throw new BadRequestHttpException('"profilPic" is required');
+        }
+
+        $errors = $validator->validate($profilPic, []);
+
+        if (count($errors) > 0) {
+            return $this->json($errors, Response::HTTP_BAD_REQUEST);
+        }
+
+        $destination = $this->getParameter('kernel.project_dir').'/public/uploads/images/user';
+
+        $imageFileName = $fileUploader->upload($profilPic);
+
+        $user->setProfilPic($imageFileName);
+        $profilPic->move($destination,$imageFileName);
+        $em = $doctrine->getManager();
+        $em->flush();
+
+        return new JsonResponse([
+            'success_message' => 'profilPic upload'
+          ]);
+
+
+    }
 }

@@ -4,8 +4,10 @@ namespace App\Controller\Api;
 
 use App\Entity\Order;
 use App\Entity\Patient;
-use App\Service\FileUploader;
+use App\Entity\Pharmacist;
 use App\Repository\OrderRepository;
+use App\Repository\PharmacistRepository;
+use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,13 +45,17 @@ class OrderController extends AbstractController
      * @Route ("/api/secure/order/new/{id}", name="api_order_create", methods={"GET","POST"})
      * 
      */
-    public function createOrder( Patient $patient, Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function createOrder(Patient $patient, Request $request, PharmacistRepository $pharmacistRepository, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
     {
+
+        $code =  mt_rand(1111,9999);
         
         // Récupérer le contenu JSON
         $jsonContent = $request->getContent();
+
+        $jsonContentBis = json_decode($jsonContent, true);
         
-        //dd($newOrder);
+        
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Order
             $newOrder = $serializer->deserialize($jsonContent, Order::class, 'json');
@@ -63,10 +68,14 @@ class OrderController extends AbstractController
             );
         }
         
-
         
-        $newOrder->setSafetyCode(0000);
+        $newOrder->setSafetyCode($code);
+        
         $newOrder->setPatient($patient);
+        $pharmacist = $pharmacistRepository->find($jsonContentBis['pharmacist_id']);
+        
+        $newOrder->setPharmacist($pharmacist);
+        
 
          // Valider l'entité
         $errors = $validator->validate($newOrder);
@@ -158,8 +167,6 @@ class OrderController extends AbstractController
         $updateOrder = $serializer->deserialize($content, Order::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $order]);
         
         
-       
-        
         $entityManager->flush();
 
         return new JsonResponse([
@@ -167,4 +174,23 @@ class OrderController extends AbstractController
         ]);
     }
 
+
+    /**
+     * Get order by city
+     * 
+     * @Route("/api/secure/order", name="api_order_city", methods={"GET"})
+     */
+    public function getOrderByCity(OrderRepository $orderRepository): Response
+    {
+
+        $orders = $orderRepository->findOrdersByCity();
+        
+        return $this->json($orders, 200, [], 
+        [
+            'groups' => 'get_order'
+        ]);
+    }
+
+
+    
 }

@@ -2,7 +2,6 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Address;
 use App\Entity\Dispensary;
 use App\Entity\Pharmacist;
 use Doctrine\ORM\EntityManagerInterface;

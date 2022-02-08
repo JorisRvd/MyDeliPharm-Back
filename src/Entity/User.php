@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
@@ -24,6 +25,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $id;
 
@@ -31,6 +34,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="smallint", nullable=true)
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $gender;
 
@@ -39,6 +44,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
      * @Assert\NotBlank
+     * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      * 
      * 
      */
@@ -62,6 +69,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $firstname;
 
@@ -70,13 +79,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotBlank
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $lastname;
 
     /**
      * @ORM\Column(type="string", length=15)
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
-     *  @Groups({"get_order"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $phoneNumber;
 
@@ -91,6 +104,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\OneToMany(targetEntity=Address::class, mappedBy="user", orphanRemoval=true)
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      * 
      */
     private $address;
@@ -112,6 +127,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"})
      */
     private $pharmacist;
+
+    /**
+     * @ORM\Column(type="string", length=2048, nullable=true)
+     * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
+     * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
+     */
+    private $profilPic;
+
+    public function __construct()
+    {
+        $this->address = new ArrayCollection();
+    }
 
     
 
@@ -340,6 +368,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         $this->pharmacist = $pharmacist;
+
+        return $this;
+    }
+
+    public function getProfilPic(): ?string
+    {
+        return $this->profilPic;
+    }
+
+    public function setProfilPic(?string $profilPic): self
+    {
+        $this->profilPic = $profilPic;
 
         return $this;
     }

@@ -19,6 +19,7 @@ class Driver
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Groups ({"get_collection"})
      */
     private $id;
 
@@ -44,22 +45,17 @@ class Driver
     private $status;
 
     /**
-     * @ORM\Column(type="string", length=2048)
-     * @Groups({"get_driver"})
-     * 
-     */
-    private $profilPic;
-
-    /**
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="driver", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
+     * 
      * 
      */
     private $user;
 
     /**
      * @ORM\OneToMany(targetEntity=Order::class, mappedBy="driver", cascade={"persist", "remove"})
-     * @Groups({"get_driver"})
+     * @Groups({"get_collection"})
+     * 
      */
     private $orders;
 
@@ -109,18 +105,6 @@ class Driver
         return $this;
     }
 
-    public function getProfilPic(): ?string
-    {
-        return $this->profilPic;
-    }
-
-    public function setProfilPic(string $profilPic): self
-    {
-        $this->profilPic = $profilPic;
-
-        return $this;
-    }
-
     public function getUser(): ?User
     {
         return $this->user;
@@ -159,6 +143,28 @@ class Driver
                 $order->setDriver(null);
             }
         }
+        return $this;
+    }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setDriver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getDriver() === $this) {
+                $order->setDriver(null);
+            }
+        }
+
         return $this;
     }
 }

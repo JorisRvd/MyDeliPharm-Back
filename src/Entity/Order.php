@@ -42,12 +42,21 @@ class Order
     
     /**
      *  @ORM\Column(type="string", length=255, nullable=true)
-     * @Groups({"get_collection"})
-     * @Groups({"get_order"})
+     *  @Groups({"get_collection"})
+     *  @Groups({"get_order"})
      *  @Groups({"get_driver"})
      *  @Groups({"get_patient"})
      */
     private $prescriptionImage;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
+     * @Groups({"get_patient"})
+     */
+    private $location;
+
     /**
      * @ORM\Column(type="integer")
      * @Groups({"get_collection"})
@@ -85,6 +94,8 @@ class Order
      * @Groups({"get_order"})
      */
     private $pharmacist;
+
+    
 
     public function getId(): ?int
     {
@@ -176,6 +187,18 @@ class Order
     public function setPrescriptionImage(?string $prescriptionImage): self
     {
         $this->prescriptionImage = $prescriptionImage;
+
+        return $this;
+    }
+
+    public function getLocation(): ?string
+    {
+        return $this->location;
+    }
+
+    public function setLocation(?string $location): self
+    {
+        $this->location = $location;
 
         return $this;
     }

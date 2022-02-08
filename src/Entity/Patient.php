@@ -40,7 +40,7 @@ class Patient
     private $weight;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="string", length=24, nullable=true)
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_patient"})
@@ -48,7 +48,7 @@ class Patient
     private $age;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="bigint", nullable=true)
      * @Assert\Unique
      * @Assert\Positive
      * @Groups({"get_collection"})
@@ -58,9 +58,8 @@ class Patient
     private $vitalCardNumber;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="bigint", nullable=true)
      * @Assert\Unique
-     * @Assert\Positive
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_patient"})
@@ -82,13 +81,17 @@ class Patient
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
-     * @Assert\Url
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
+     * 
      */
     private $vitalCardFile;
 
     /**
      * @ORM\Column(type="string", length=2048, nullable=true)
-     * @Assert\Url
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
+     * 
      */
     private $mutuelleFile;
 
@@ -115,10 +118,19 @@ class Patient
      */
     private $dispensary;
 
+    /**
+     * @ORM\Column(type="string", length=24, nullable=true)
+     * @Groups({"get_collection"})
+     * @Groups({"get_order"})
+     * @Groups({"get_patient"})
+     */
+    private $validityMutuelle;
+
     public function __construct()
     {
-        $this->user = new User(); 
-        $this->orders = new ArrayCollection();
+        $this->user = new User();
+        $this->orders = new ArrayCollection(); 
+        
     }
   
     public function __toString()
@@ -276,6 +288,40 @@ class Patient
     public function setDispensary(?Dispensary $dispensary): self
     {
         $this->dispensary = $dispensary;
+
+        return $this;
+    }
+
+    public function getValidityMutuelle(): ?string
+    {
+        return $this->validityMutuelle;
+    }
+
+    public function setValidityMutuelle(?string $validityMutuelle): self
+    {
+        $this->validityMutuelle = $validityMutuelle;
+
+        return $this;
+    }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setPatient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getPatient() === $this) {
+                $order->setPatient(null);
+            }
+        }
 
         return $this;
     }

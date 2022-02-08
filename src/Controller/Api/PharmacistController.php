@@ -2,21 +2,21 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Patient;
+use App\Entity\Order;
 use App\Entity\Pharmacist;
-use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class PharmacistController extends AbstractController
 {
@@ -96,14 +96,11 @@ class PharmacistController extends AbstractController
      * 
      * @Route ("/api/secure/user/pharmacist/{id}", name="api_pharmacist_edit", methods={"PUT"})
      */
-    public function edit( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, Pharmacist $pharmacist): Response
+    public function edit( Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id): Response
     {
         $entityManager = $doctrine->getManager();
-        
         $pharmacist = $entityManager->getRepository(Pharmacist::class)->find($id);
-        
-        
-        // dd($patient);
+         
         $content = $request->getContent(); // Get json from request
         
         $updatePharmacist = $serializer->deserialize($content, Pharmacist::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $pharmacist]);
@@ -117,6 +114,25 @@ class PharmacistController extends AbstractController
             'success_message' => 'Profil pharmacien mis à jour.'
         ]);
     }
+
+     /**
+     * Get profil pharmacist
+     * 
+     * @Route("/api/secure/user/pharmacists", name="api_pharmacists", methods={"GET"})
+     */
+    public function getAllPharmacist(ManagerRegistry $doctrine): Response
+    {
+        $repository = $doctrine->getRepository(Pharmacist::class);
+        $pharmacists = $repository->findAll();
+    
+        return $this->json($pharmacists, 200, [], 
+        [
+            'groups' => 'get_pharmacists'
+        ]);
+        
+    }
+
+   
 
 
 }
