@@ -6,6 +6,7 @@ use App\Entity\Order;
 use App\Entity\Patient;
 use App\Entity\Pharmacist;
 use App\Repository\OrderRepository;
+use App\Repository\PharmacistRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -44,14 +45,17 @@ class OrderController extends AbstractController
      * @Route ("/api/secure/order/new/{id}", name="api_order_create", methods={"GET","POST"})
      * 
      */
-    public function createOrder(Patient $patient, Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function createOrder(Patient $patient, Request $request, PharmacistRepository $pharmacistRepository, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
     {
+
         $code =  mt_rand(1111,9999);
         
         // Récupérer le contenu JSON
         $jsonContent = $request->getContent();
+
+        $jsonContentBis = json_decode($jsonContent, true);
         
-        //dd($newOrder);
+        dump($jsonContentBis);
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Order
             $newOrder = $serializer->deserialize($jsonContent, Order::class, 'json');
@@ -66,9 +70,12 @@ class OrderController extends AbstractController
         
         
         $newOrder->setSafetyCode($code);
+        dump($patient);
         $newOrder->setPatient($patient);
-        // $newOrder->setPharmacist($pharmacist);
-       // dd($newOrder);
+        $pharmacist = $pharmacistRepository->find($jsonContentBis['pharmacist_id']);
+        dump($pharmacist);
+        $newOrder->setPharmacist($pharmacist);
+        dump($newOrder);
 
          // Valider l'entité
         $errors = $validator->validate($newOrder);
@@ -147,7 +154,7 @@ class OrderController extends AbstractController
      * 
      * @Route ("/api/secure/order/{id}", name="api_order_edit", methods={"PUT"})
      */
-    public function edit(Request $request, Pharmacist $pharmacist, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, Order $order): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, Order $order): Response
     {
         $entityManager = $doctrine->getManager();
         
@@ -160,7 +167,7 @@ class OrderController extends AbstractController
         $updateOrder = $serializer->deserialize($content, Order::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $order]);
         //dd($updateOrder);
         // $pharmacist->;
-        $pharmacist->addOrders($updateOrder);
+        $order->setPharmacist();
         
         $entityManager->flush();
 
