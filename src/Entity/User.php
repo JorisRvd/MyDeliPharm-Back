@@ -98,6 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"})
      * @Groups({"get_pharmacist"})
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacists"})
      * 
      */
     private $address;

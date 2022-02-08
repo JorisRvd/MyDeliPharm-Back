@@ -45,6 +45,7 @@ class OrderController extends AbstractController
      */
     public function createOrder( Patient $patient, Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
     {
+        $code =  mt_rand(1111,9999);
         
         // Récupérer le contenu JSON
         $jsonContent = $request->getContent();
@@ -64,7 +65,7 @@ class OrderController extends AbstractController
         
 
         
-        $newOrder->setSafetyCode(1234);
+        $newOrder->setSafetyCode($code);
         $newOrder->setPatient($patient);
 
          // Valider l'entité
@@ -177,9 +178,6 @@ class OrderController extends AbstractController
 
         $orders = $orderRepository->findOrdersByCity();
         
-       
-
-
         return $this->json($orders, 200, [], 
         [
             'groups' => 'get_order'
