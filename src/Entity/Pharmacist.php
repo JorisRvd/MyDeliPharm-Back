@@ -2,9 +2,10 @@
 
 namespace App\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PharmacistRepository;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -21,6 +22,7 @@ class Pharmacist
      * @ORM\Column(type="integer")
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      * @Groups ({"get_collection"})
      * 
      */
@@ -29,6 +31,7 @@ class Pharmacist
     /**
      * @ORM\Column(type="integer", nullable=true)
      * @Groups({"get_collection"},{"get_pharmacist"})
+     * @Groups({"get_pharmacist"})
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
      * 
@@ -39,6 +42,7 @@ class Pharmacist
     /**
      * @ORM\Column(type="smallint", nullable=true)
      * @Groups({"get_collection"},{"get_pharmacist"})
+     * @Groups({"get_pharmacist"})
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
      * 
@@ -50,13 +54,14 @@ class Pharmacist
      * @ORM\OneToOne(targetEntity=User::class, inversedBy="pharmacist", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"get_order"})
+     * @Groups({"get_pharmacist"})
      * @Groups({"get_pharmacists"})
      * 
      */
     private $user;
 
     /**
-     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="pharmacist", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=Order::class, mappedBy="pharmacist", orphanRemoval=true)
      * @ORM\JoinColumn(nullable=true)
      * @Groups({"get_pharmacist"})
      * @Groups({"get_collection"})
@@ -74,6 +79,7 @@ class Pharmacist
     public function __construct()
     {
         $this->user = new User; 
+        $this->orders = new ArrayCollection();
     }
     public function __toString()
     {
@@ -159,6 +165,28 @@ class Pharmacist
     public function setDispensary(?Dispensary $dispensary): self
     {
         $this->dispensary = $dispensary;
+
+        return $this;
+    }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setPharmacist($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getPharmacist() === $this) {
+                $order->setPharmacist(null);
+            }
+        }
 
         return $this;
     }

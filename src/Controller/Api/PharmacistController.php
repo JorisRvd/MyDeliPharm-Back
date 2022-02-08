@@ -2,19 +2,21 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Order;
 use App\Entity\Pharmacist;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 class PharmacistController extends AbstractController
 {
@@ -128,6 +130,55 @@ class PharmacistController extends AbstractController
             'groups' => 'get_pharmacists'
         ]);
         
+    }
+
+    /**
+     * Accept order
+     * 
+     * @Route("/api/secure/user/pharmacist/order/{id}", name="api_pharmacists_accept_order", methods={"PUT"})
+     */
+    public function acceptOrder(Request $request,EntityManagerInterface $entityManager, SerializerInterface $serializer,Order $order, ManagerRegistry $doctrine, int $id)
+    {
+        $entityManager = $doctrine->getManager();
+
+        $pharmacist = $entityManager->getRepository(Pharmacist::class);
+
+        $content = $request->getContent();
+
+        $order->setPharmacist($pharmacist);
+        
+        $entityManager->flush();
+
+        return new JsonResponse([
+            'success_message' => 'pharmacien mis à jour.'
+        ]);
+    }
+
+
+
+    /**
+     * Edit order pharmacist
+     * 
+     * @Route("/api/secure/order/pharmacist/{order_id}", name="api_order_pharmacist", methods={"PUT"})
+     * @ParamConverter("order", options={"id" = "order_id"})
+     */
+    public function orderPharmacist(Request $request, Pharmacist $pharmacist, SerializerInterface $serializer,EntityManagerInterface $entityManager, ManagerRegistry $doctrine, int $id)
+    {
+        $entityManager = $doctrine->getManager();
+
+        $order = $entityManager->getRepository(Order::class)->find($id);
+
+        $content = $request->getContent(); // Get json from request
+        
+        $updateOrder = $serializer->deserialize($content, Order::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $order]);
+
+        $updateOrder->setPharmacist();
+
+        // $entityManager->flush();
+
+        return new JsonResponse([
+            'success_message' => 'Order associé.'
+        ]);
     }
 
 

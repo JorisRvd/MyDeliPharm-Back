@@ -145,4 +145,26 @@ class Driver
         }
         return $this;
     }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setDriver($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getDriver() === $this) {
+                $order->setDriver(null);
+            }
+        }
+
+        return $this;
+    }
 }

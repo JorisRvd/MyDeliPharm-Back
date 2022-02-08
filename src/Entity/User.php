@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\User\JWTUserInterface;
@@ -25,6 +26,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $id;
 
@@ -33,6 +35,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"})
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $gender;
 
@@ -42,6 +45,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_order"})
      * @Assert\NotBlank
      * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      * 
      * 
      */
@@ -66,6 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $firstname;
 
@@ -75,6 +80,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $lastname;
 
@@ -83,6 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_collection"}, {"get_pharmacist"}, {"get_driver"}, {"get_patient"})
      * @Groups({"get_order"})
      * @Groups({"get_pharmacists"})
+     * @Groups({"get_pharmacist"})
      */
     private $phoneNumber;
 
@@ -128,6 +135,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups({"get_pharmacists"})
      */
     private $profilPic;
+
+    public function __construct()
+    {
+        $this->address = new ArrayCollection();
+    }
 
     
 

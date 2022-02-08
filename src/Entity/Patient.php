@@ -128,8 +128,9 @@ class Patient
 
     public function __construct()
     {
-        $this->user = new User(); 
-        $this->orders = new ArrayCollection();
+        $this->user = new User();
+        $this->orders = new ArrayCollection(); 
+        
     }
   
     public function __toString()
@@ -299,6 +300,28 @@ class Patient
     public function setValidityMutuelle(?string $validityMutuelle): self
     {
         $this->validityMutuelle = $validityMutuelle;
+
+        return $this;
+    }
+
+    public function addOrder(Order $order): self
+    {
+        if (!$this->orders->contains($order)) {
+            $this->orders[] = $order;
+            $order->setPatient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOrder(Order $order): self
+    {
+        if ($this->orders->removeElement($order)) {
+            // set the owning side to null (unless already changed)
+            if ($order->getPatient() === $this) {
+                $order->setPatient(null);
+            }
+        }
 
         return $this;
     }

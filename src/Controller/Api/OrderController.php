@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Order;
 use App\Entity\Patient;
+use App\Entity\Pharmacist;
 use App\Repository\OrderRepository;
 use App\Service\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,7 +44,7 @@ class OrderController extends AbstractController
      * @Route ("/api/secure/order/new/{id}", name="api_order_create", methods={"GET","POST"})
      * 
      */
-    public function createOrder( Patient $patient, Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
+    public function createOrder(Patient $patient, Request $request, EntityManagerInterface $em, ManagerRegistry $doctrine, SerializerInterface $serializer, ValidatorInterface $validator)
     {
         $code =  mt_rand(1111,9999);
         
@@ -63,10 +64,11 @@ class OrderController extends AbstractController
             );
         }
         
-
         
         $newOrder->setSafetyCode($code);
         $newOrder->setPatient($patient);
+        // $newOrder->setPharmacist($pharmacist);
+       // dd($newOrder);
 
          // Valider l'entité
         $errors = $validator->validate($newOrder);
@@ -145,7 +147,7 @@ class OrderController extends AbstractController
      * 
      * @Route ("/api/secure/order/{id}", name="api_order_edit", methods={"PUT"})
      */
-    public function edit(Request $request, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, Order $order): Response
+    public function edit(Request $request, Pharmacist $pharmacist, EntityManagerInterface $entityManager, SerializerInterface $serializer, ManagerRegistry $doctrine, int $id, Order $order): Response
     {
         $entityManager = $doctrine->getManager();
         
@@ -156,9 +158,9 @@ class OrderController extends AbstractController
         $content = $request->getContent(); // Get json from request
         
         $updateOrder = $serializer->deserialize($content, Order::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $order]);
-        
-        
-       
+        //dd($updateOrder);
+        // $pharmacist->;
+        $pharmacist->addOrders($updateOrder);
         
         $entityManager->flush();
 
@@ -184,4 +186,6 @@ class OrderController extends AbstractController
         ]);
     }
 
+
+    
 }
