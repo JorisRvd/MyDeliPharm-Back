@@ -55,7 +55,7 @@ class OrderController extends AbstractController
 
         $jsonContentBis = json_decode($jsonContent, true);
         
-        dump($jsonContentBis);
+        
         try {
             // Désérialiser (convertir) le JSON en entité Doctrine Order
             $newOrder = $serializer->deserialize($jsonContent, Order::class, 'json');
@@ -70,12 +70,12 @@ class OrderController extends AbstractController
         
         
         $newOrder->setSafetyCode($code);
-        dump($patient);
+        
         $newOrder->setPatient($patient);
         $pharmacist = $pharmacistRepository->find($jsonContentBis['pharmacist_id']);
-        dump($pharmacist);
+        
         $newOrder->setPharmacist($pharmacist);
-        dump($newOrder);
+        
 
          // Valider l'entité
         $errors = $validator->validate($newOrder);
@@ -165,9 +165,7 @@ class OrderController extends AbstractController
         $content = $request->getContent(); // Get json from request
         
         $updateOrder = $serializer->deserialize($content, Order::class, 'json', [AbstractNormalizer::OBJECT_TO_POPULATE => $order]);
-        //dd($updateOrder);
-        // $pharmacist->;
-        $order->setPharmacist();
+        
         
         $entityManager->flush();
 
